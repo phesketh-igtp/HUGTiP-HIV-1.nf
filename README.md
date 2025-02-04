@@ -20,13 +20,13 @@ nextflow run ~/.nextflow/assets/phesketh-igtp/HUGTiP-HIV-1.nf --help
 Alternatively, the github repository can be cloned.
 
 ```{sh}
-gh repo clone phesketh-igtp/HUGTiP-HIV-1.nf
+git clone phesketh-igtp/HUGTiP-HIV-1.nf
 nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --help
 ```
 
 With the repository available locally, you can proceed with performing the test to ensure that everything works on your system.
 ```{sh}
-nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet test/samplesheet.csv --outdir init-test -p conda_on #OR: docker_on, singularity_on, aptainer_on
+nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet test/samplesheet.csv --runID test --outdir init-test -profile conda_on #OR: docker_on, singularity_on, aptainer_on
 ```
 
 You can compare the outputs from the test with the expected results in the rest directory (e.g. <code>test/sample-1.hiv1-dr.results.html</code>).

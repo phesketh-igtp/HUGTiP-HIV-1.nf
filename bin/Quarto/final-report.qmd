@@ -1,0 +1,175 @@
+---
+title: "HUGTiP HIV-1 Drug Resistance Analysis"
+author: "Poppy J Hesketh Best"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    fig-width: 8
+    fig-height: 4
+    code-fold: true
+
+---
+
+```{r, echo=FALSE, quiet=TRUE}
+
+#| label: Importing dataframes and prepping results
+library(tidyverse)
+
+hydra <- read_csv("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/hydra/sample-1.dr_report.csv")
+sierrapy <- read_csv("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/sierra/sample-1.sierrapy.hiv1.csv")
+vcf_annot <- read_delim("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/hydra/sample-1.mutation_report.aavf", delim = "\t", comment = "#", col_names = FALSE)
+colnames(vcf_annot) <- c("CHROM","GENE","POS","REF","ALT","FILTER","ALT_FREQ","COVERAGE","INFO")
+read_lengths <- read_csv("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/readStats/sample-1.length-freq.tsv")
+read_counts <- read_delim("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/readStats/sample-1.stats.tsv")
+sample_ID <- 'sample-1'
+
+```
+
+-------------------------------------------------------------------------------------------
+
+## Sequencing Summary
+
+-------------------------------------------------------------------------------------------
+
+**Query ID**: `r sample_ID`
+
+**Total of reads**: `r sum(read_counts$num_seqs, na.rm = TRUE)` (PE: `r mean(read_counts$num_seqs, na.rm = TRUE)`)
+
+**HIV subtype**: `r sierrapy$subtype`
+
+-------------------------------------------------------------------------------------------
+
+### Pipeline parameters
+
+**Minimum mutation frequency**:
+
+**Minimum percentage a base needs to be incorporated into consensus sequence**:
+
+**Minimum read depth**:
+
+#### SierraPy / Sierra-local
+
+**Algorith version**: 
+
+-------------------------------------------------------------------------------------------
+
+## Drug resistance results 
+
+-------------------------------------------------------------------------------------------
+
+### RNA-dependent polymerase / RdRp
+
+**PI Major Resistance Mutations**:
+
+**PI Accessory Resistance Mutations**:
+
+**Other PR Mutations**:
+
+Comments:
+
+
+### Reverse Trascriptase  / RT
+
+**NNRTI Major Resistance Mutations**:
+
+**NRTI Accessory Resistance Mutations**:
+
+**Other PR Mutations**:
+
+Comments:
+
+
+### Intergrase / IN
+
+**INI Major Resistance Mutations**:
+
+**INI Accessory Resistance Mutations**:
+
+**Other PR Mutations**:
+
+Comments:
+
+-------------------------------------------------------------------------------------------
+
+## Sequencing analysis summary
+
+### Read fragments
+
+@fig-read-histogram
+
+```{r, echo=FALSE}
+#| label: fig-read-histogram
+#| fig-cap: "Histogram of read lengths"
+#| warning: false
+#| layout: [[50,50], [100]]
+
+  library(tidyverse);library(ggplot2)
+
+  read_lengths |>
+    ggplot( aes(x=count)) +
+      geom_histogram( binwidth=1, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+      ggtitle("Bin size = 1") +
+      theme_bw() +
+      theme(
+        plot.title = element_text(size=15)
+      )
+
+  read_lengths |>
+    mutate(sample = paste(sample_ID)) |>
+    ggplot( aes(
+              y=count, 
+              x = sample )
+          ) +
+      geom_boxplot() +
+    geom_jitter(color="black", size=0.4, alpha=0.9) +
+    theme_bw() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Read lengths") +
+    xlab("")
+
+  
+```
+
+### Genome coverage
+
+@fig-hiv_coverage further explores the impact of temperature on ozone level.
+
+```{r, echo=FALSE}
+#| label: fig-hiv_coverage
+#| fig-cap: "Annotated genome with read coverage."
+#| warning: false
+
+
+  library(tidyverse);library(ggplot2)
+
+  ggplot(vcf_annot, 
+        aes(
+          x = POS, 
+          y = COVERAGE)
+        ) + 
+    geom_line() +
+    theme_bw() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    labs(x = "Position along HVB2 pol", y = "Depth of coverage (no. reads)") +
+    geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = -0, fill = "blue")) +
+    geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300, fill = "red")) +
+    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0, fill = "green")) +
+    
+
+
+
+
+
+```
+
+
+-------------------------------------------------------------------------------------------
+
+
+## Citations

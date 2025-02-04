@@ -1,6 +1,6 @@
 process runTrimGalore {
 
-    tag "${type}: ${sampleID}"
+    tag "${sampleID}"
 
     conda params.conda_main_envs
 

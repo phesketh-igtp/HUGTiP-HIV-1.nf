@@ -16,7 +16,8 @@ process runHydra{
         tuple val(sampleID), 
                 path("${sampleID}.consensus.fasta"),  emit: cns_sequence
         path("${sampleID}.dr_report.csv"),            emit: drug_res
-        path("${sampleID}.mutation_report.aavf.gz")
+        path("${sampleID}.coverage_file.csv"),       emit: coverage
+        path("${sampleID}.hydra.vcf")
 
     script:
         """
@@ -39,12 +40,13 @@ process runHydra{
                 --min_freq ${params.min_freq}
         
         # rename to ensure results are unqiue
-            mv consensus.fasta ${sampleID}.consensus.fasta 
-            mv dr_report.csv ${sampleID}.dr_report.csv
+            mv consensus.fasta      ${sampleID}.consensus.fasta 
+            mv dr_report.csv        ${sampleID}.dr_report.csv
             mv mutation_report.aavf ${sampleID}.mutation_report.aavf
-            mv filtered.fastq ${sampleID}.filtered.fastq
-            gzip --best ${sampleID}.filtered.fastq
-            gzip --best ${sampleID}.mutation_report.aavf
+            mv filtered.fastq       ${sampleID}.filtered.fastq
+            mv coverage_file.csv    ${sampleID}.coverage_file.csv
+            mv hydra.vcf            ${sampleID}.hydra.vcf
+
             rm ${sampleID}_R1.fastq ${sampleID}_R2.fastq 
 
         """

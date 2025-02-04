@@ -44,6 +44,9 @@ To run the pipeline you require a csv file that contains 4 columns, consult the 
 | sample-1 | ../test/sample1_R1.fastq.gz | ../test/sample1_R2.fastq.gz | sample |
 | sample-8 | ../test/sample8_R1.fastq.gz | ../test/sample8_R2.fastq.gz | control |
 
-
 ## Citations
 
+- Ewels P. et al.  (2016) [MultiQC: summarize analysis results for multiple tools and samples in a single report.](https://doi.org/10.1093/bioinformatics/btw354) Bioinformatics, 32, 3047–3048.
+- Ho J.C. et al.  (2019) [Sierra-local: a lightweight standalone application for drug resistance prediction.](https://joss.theoj.org/papers/10.21105/joss.01186.pdf) Softw. J. Open Source Softw., 4, 1186.
+- Krueger F. (2012) [Trim Galore: A Wrapper Tool Around Cutadapt and FastQC to Consistently Apply Quality and Adapter Trimming to FastQ files, with Some Extra Functionality for MspI-Digested RRBS-Type (Reduced Representation Bisufite-Seq) Libraries.](http://www.bioinformatics.babraham.ac.uk/projects/trim\_galore/)
+- Langmead B., Salzberg S.L. (2012) [Fast gapped-read alignment with Bowtie 2.](https://www.nature.com/articles/nmeth.1923) Nat. Methods, 9, 357–359.

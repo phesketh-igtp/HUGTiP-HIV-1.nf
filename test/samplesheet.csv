@@ -1,0 +1,5 @@
+sampleID,forward,reverse,type
+sample-1,../test/sample1_R1.fastq.gz,../test/sample1_R2.fastq.gz,sample
+sample-3,../test/sample3_R1.fastq.gz,../test/sample3_R2.fastq.gz,sample
+sample-6,../test/sample6_R1.fastq.gz,../test/sample6_R2.fastq.gz,sample
+sample-8,../test/sample8_R1.fastq.gz,../test/sample8_R2.fastq.gz,control

@@ -1,20 +1,12 @@
 # QuasiFlow
 
-[![](https://img.shields.io/badge/nextflow-21.04.1-yellowgreen)](https://www.nextflow.io)
-[![](https://img.shields.io/badge/uses-singularity-brightgreen)](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)
-[![](https://img.shields.io/badge/uses-docker-orange)](https://docs.docker.com/get-docker)
-[![](https://img.shields.io/badge/uses-conda-yellowgreen)](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
-[![](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
-[![Twitter Follow](https://img.shields.io/twitter/follow/alfred_ug.svg?style=social)](https://twitter.com/alfred_ug) 
-
 ## Introduction
 
 QuasiFlow is a nextflow pipeline for reproducible analysis of NGS-based HIVDR testing data across different computing environments. The pipeline takes raw sequence reads in FASTQ format as input, performs quality control, mapping of reads to a reference genome, variant calling, querying the database for detection of HIV drug resistance mutations, and ultimately generates a user-friendly report in PDF and HTML format. QuasiFlow is publicly available at https://github.com/AlfredUg/QuasiFlow. 
 
 ## Installation
 
-QuasiFlow requires **nextflow** (version 21.04.3 or higher) and any of **conda**/**singularity**/**docker**. In this walk through, we shall demonstrate the use of `conda` which is more readily available to most users.
+QuasiFlow requires **nextflow** (version 24.04.3 or higher) and any of **conda**/**singularity**/**docker**. In this walk through, we shall demonstrate the use of `conda` which is more readily available to most users.
 
 The first option is to install the pipeline using nextflow, it will be installed in the `$HOME` directory under the `.nextflow` sub-directory. Confirm that installation was successful by printing out the help message.
 

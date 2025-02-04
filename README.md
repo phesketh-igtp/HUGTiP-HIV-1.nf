@@ -26,10 +26,12 @@ nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --help
 
 With the repository available locally, you can proceed with performing the test to ensure that everything works on your system.
 ```{sh}
-nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet test/samplesheet --outdir init-test -p conda_on #OR: docker_on, singularity_on, aptainer_on
+nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet test/samplesheet.csv --outdir init-test -p conda_on #OR: docker_on, singularity_on, aptainer_on
 ```
 
 You can compare the outputs from the test with the expected results in the rest directory (e.g. <code>test/sample-1.hiv1-dr.results.html</code>).
+
+----
 
 ## Usage
 
@@ -43,6 +45,48 @@ To run the pipeline you require a csv file that contains 4 columns, consult the 
 | -------- | -------- | -------- | -------- |
 | sample-1 | ../test/sample1_R1.fastq.gz | ../test/sample1_R2.fastq.gz | sample |
 | sample-8 | ../test/sample8_R1.fastq.gz | ../test/sample8_R2.fastq.gz | control |
+
+### Simple usage
+
+```{sh}
+nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet /path/to/samplesheet.csv --outdir /path/to/output -p conda_on
+```
+
+### Parameters
+
+#### HyDRA parameters
+
+**Mandatory parameters**
+
+- <code>--samplesheet</code> : Path to samplesheet csv (',' seperated)
+
+**Optional parameters**
+- <code>--reporting_threshold</code> : Minimum mutation frequency percent to report.
+- <code>--consensus_pct</code> : Minimum percentage a base needs to be incorporated into the consensus sequence.
+- <code>--min_read_qual</code> : Minimum quality for a position in a read to be masked.
+- <code>--length_cutoff</code> : Reads which fall short of the specified length will be filtered out.
+- <code>--score_cutoff</code> : Reads that have a median or mean quality score (depending on the score type specified) less than the score cutoff value will be filtered out.
+- <code>--min_variant_qual</code> : Minimum quality for variant to be considered later on in the pipeline.
+- <code>--min_dp</code> : Minimum required read depth for variant to be considered later on in the pipeline.
+- <code>--min_ac</code> : The minimum required allele count for variant to be considered later on in the pipeline
+- <code>--min_freq</code> : The minimum required frequency for mutation to be considered in drug resistance report.
+
+#### Sierralocal parameters
+
+**Optional parameters**
+
+- <code>--xml</code> : Path to HIVdb ASI2 XML.
+- <code>--apobec-tsv</code> : Path to tab-delimited (tsv) HIVdb APOBEC DRM file.
+- <code>--comments-tsv</code> : Path to tab-delimited (tsv) HIVdb comments file.
+
+#### Output parameters
+
+**Optional parameters**
+
+- <code>--outdir</code> : Path to directory where results will be saved (default: ./out)
+- <code>--workDir</code> : Path to directory where temporary work directory will be saved - can be deleted after analysis (default: ./work)
+
+----
 
 ## Citations
 

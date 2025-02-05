@@ -26,12 +26,16 @@ process renderReport{
     script:
 
         """
+        cat run_params.csv
         sed -i '1d' ${coverage_res} # remove the header for the coverage file
         cut -f2 ${lengths_res} > read_lenths.tsv
-        
+
         cp "${params.scriptDir}/Quarto/final-report.qmd" final-report.qmd
 
+            sed -i "s/insert_sampleID/${sampleID}" final-report.qmd
+
         quarto render final-report.qmd --to html,pdf --execute-params
+
         """
 }
 

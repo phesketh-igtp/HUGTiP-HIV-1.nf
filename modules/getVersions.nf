@@ -24,10 +24,10 @@ process getVersions {
 
         # Version controls
             quasitools --version | sed 's/ version /v/g' >> run_params
-            sierrapy --version | sed 's/; /\n/g' | sed 's/SierraPy /SierraPy,v/g' | sed 's/Sierra /Sierra,v/g' | sed 's/HIVdb /HIVdb,/g' >> run_params
             trim_galore -v | grep 'version' | sed 's/ //g; s/version/TrimGalore,v/g' >> run_params
             seqkit -h | grep 'Version' | sed 's/Version: /seqkit,v/g' >> run_params
-            bowtie2 --version | grep 'version' | sed 's/bowtie2-align-s version /BowTie2,v/g' >> run_params
+            sierrapy --version | sed -e 's/; /\n/g' >> run_params
+            sed 's/SierraPy /SierraPy,v/g' run_params | sed 's/Sierra /Sierra,v/g' | sed 's/HIVdb /HIVdb,/g' >> run_params
 
             mv run_params run_params.csv
         """

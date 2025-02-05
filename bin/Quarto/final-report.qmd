@@ -7,7 +7,6 @@ format:
   pdf: default
 params:
     sampleID: "insert_sampleID"
-    run_params: "run_params.csv"
 execute:
     echo: false  # Hide code output unless necessary
 ---

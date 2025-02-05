@@ -6,13 +6,13 @@ format:
   html: default
   pdf: default
 params:
-    sampleID: "sample-1"
-    lengths: "/home/phesketh/Documents/projects/HIV/test/readStats/sample-1.length-freq.tsv"
-    coverage: "/home/phesketh/Documents/projects/HIV/test/hydra/sample-1.coverage_file.csv"
-    stats: "/home/phesketh/Documents/projects/HIV/test/readStats/sample-1.stats.tsv"
-    sierrapy: "/home/phesketh/Documents/projects/HIV/test/sierra/sample-1.sierrapy.hiv1.csv"
-    hydra: "/home/phesketh/Documents/projects/HIV/test/hydra/sample-1.dr_report.csv"
-    hydra_vcf: "/home/phesketh/Documents/projects/HIV/test/hydra/sample-1.hydra.vcf"
+    sampleID: ""
+    lengths: "length-freq.tsv"
+    coverage: "coverage_file.csv"
+    stats: "stats.tsv"
+    sierrapy: "sierrapy.hiv1.csv"
+    hydra: "hydra_report.csv"
+    hydra_vcf: "hydra.vcf"
     run_params: "run_params"
 execute:
     echo: false  # Hide code output unless necessary

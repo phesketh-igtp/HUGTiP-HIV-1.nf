@@ -19,7 +19,7 @@ process runHydra{
         tuple val(sampleID),
                 path("${sampleID}.dr_report.csv"),
                 path("${sampleID}.coverage_file.csv"),
-                path("${sampleID}.hydra.vcf")
+                path("${sampleID}.hydra.vcf"),
                 path("run_params"),                     emit: report_ch
 
     script:

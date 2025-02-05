@@ -1,25 +1,27 @@
 process renderReport{
 
-    tag "$sampleID"
+    tag "${sampleID}"
 
     conda params.conda_R_envs
 
-    publishDir "${params.outDir}", mode: 'move'
+    publishDir "${params.outdir}/${runID}/final-report", mode: 'copy'
     
     input:
+        val(runID)
+
         tuple val(sampleID), 
-                path(lengths_res),
-                path(stats_res),
-                path(hydra_res),
-                path(coverage_res),
-                path(hydra_vcf),
-                path(runs_params)
-                path(sierrapy_res)
+                path(lengths_res,   stageAs: "length-freq.tsv"),
+                path(stats_res,     stageAs: "stats.tsv"),
+                path(hydra_res,     stageAs: "hydra_report.csv"),
+                path(coverage_res,  stageAs: "coverage_file.csv"),
+                path(hydra_vcf,     stageAs: "hydra.vcf"),
+                path(runs_params,   stageAs: "run_params"),
+                path(sierrapy_res,  stageAs: "sierrapy.hiv1.csv")
 
     output:
         tuple val(sampleID), 
-                path('hivdr_*.html'), 
-                path('hivdr_*.pdf'),    emit: final_report_ch
+                path('*.html'), 
+                path('*.pdf'),    emit: final_report_ch
 
     script:
 
@@ -29,10 +31,16 @@ process renderReport{
         """
         sed -i '1d' ${coverage_res} # remove the header for the coverage file
         cut -f2 ${lengths_res} > read_lenths.tsv
-            
-        quarto render --to html,pdf \
-                "${params.scriptDir}/Quarto/final-report.qmd" \\
-                --execute-params sampleID="${sampleID}" \\
+        
+        cp "${params.scriptDir}/Quarto/final-report.qmd" final-report.qmd
+
+        quarto render final-report.qmd  \\
+                    --to html,pdf --execute-params
+        """
+}
+
+/*
+sampleID="${sampleID}" \\
                                 lengths="read_lenths.tsv" \\
                                 stats="${stats_res}" \\
                                 sierrapy="${sierrapy_res}" \\
@@ -40,5 +48,4 @@ process renderReport{
                                 hydra_vcf="${hydra_vcf}" \\
                                 coverage="${coverage_res}"
                                 run_params="${runs_params}"
-        """
-}
+                                */

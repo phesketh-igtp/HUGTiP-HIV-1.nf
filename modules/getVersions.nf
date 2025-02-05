@@ -12,6 +12,7 @@ process getVersions {
 
         """
         # Create the analysis parameters file
+            rm -f run_params
             echo "reporting_threshold,${params.reporting_threshold}" > run_params
             echo "consensus_pct,${params.consensus_pct}" >> run_params
             echo "length_cutoff,${params.length_cutoff}" >> run_params
@@ -23,14 +24,16 @@ process getVersions {
             echo "min_read_qual,${params.min_read_qual}" >> run_params
 
         # Version controls
-            quasitools --version | sed 's/ version /v/g' > versions
+            rm -f versions
+            quasitools --version | sed 's/ version /v/g' >> versions
             trim_galore -v | grep 'version' | sed 's/ //g; s/version/TrimGalore,v/g' >> versions
             seqkit -h | grep 'Version' | sed 's/Version: /seqkit,v/g' >> versions
             sierrapy --version >> versions
-            #sed 's/SierraPy /SierraPy,v/g' run_params | sed 's/; Sierra /Sierra,v/g' | sed 's/HIVdb /; HIVdb,/g' >> run_params
+            sed 's/SierraPy /SierraPy,v/g' versions | sed 's/; Sierra /; Sierra,v/g' | sed 's/; HIVdb /; HIVdb,/g' >> versions
+            #sed -i "s/;/\n/g" versions
 
         # Rename as a csv file
-            mv run_params run_params.csv
+            cat versions run_params > run_params.csv
         """
 
     }

@@ -19,8 +19,7 @@ process runHydra{
         tuple val(sampleID),
                 path("${sampleID}.dr_report.csv"),
                 path("${sampleID}.coverage_file.csv"),
-                path("${sampleID}.hydra.vcf"),
-                path("run_params"),                     emit: report_ch
+                path("${sampleID}.hydra.vcf"),          emit: report_ch
 
     script:
         """
@@ -44,17 +43,6 @@ process runHydra{
                 --min_freq              ${params.min_freq} \\
                 --min_read_qual         ${params.min_read_qual}
 
-        # Create the analysis parameters file
-            echo "reporting_threshold,${params.reporting_threshold}" > run_params
-            echo "consensus_pct,${params.consensus_pct}" >> run_params
-            echo "length_cutoff,${params.length_cutoff}" >> run_params
-            echo "score_cutoff,${params.score_cutoff}" >> run_params
-            echo "min_variant_qual,${params.min_variant_qual}" >> run_params
-            echo "min_dp,${params.min_dp}" >> run_params
-            echo "min_ac,${params.min_ac}" >> run_params
-            echo "min_freq,${params.min_freq}" >> run_params
-            echo "min_read_qual,${params.min_read_qual}" >> run_params
-        
         # rename to ensure results are unqiue
             mv consensus.fasta      ${sampleID}.consensus.fasta 
             mv dr_report.csv        ${sampleID}.dr_report.csv

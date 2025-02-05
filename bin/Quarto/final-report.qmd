@@ -6,14 +6,8 @@ format:
   html: default
   pdf: default
 params:
-    sampleID: ""
-    lengths: "length-freq.tsv"
-    coverage: "coverage_file.csv"
-    stats: "stats.tsv"
-    sierrapy: "sierrapy.hiv1.csv"
-    hydra: "hydra_report.csv"
-    hydra_vcf: "hydra.vcf"
-    run_params: "run_params"
+    sampleID: "insert_sampleID"
+    run_params: "run_params.csv"
 execute:
     echo: false  # Hide code output unless necessary
 ---
@@ -24,12 +18,12 @@ execute:
 # Accessing parameters in R
   sample_ID    <- params$sampleID
   
-  read_lengths <- read_csv(params$lengths)
+  read_lengths <- read_csv("length-freq.tsv")
     colnames(read_lengths) <- c("length")
   
-  read_counts  <- read_delim(params$stats)
+  read_counts  <- read_delim("stats.tsv")
   
-  sierrapy     <- read_csv(params$sierrapy)
+  sierrapy     <- read_csv("sierrapy.hiv1.csv")
     sierrapy_dr <- sierrapy |> 
       select(-name, -subtype) |>  # Remove name and subtype columns
       pivot_longer(cols = everything(),  # Pivot all remaining columns
@@ -46,7 +40,7 @@ execute:
         )
       )
   
-  hydra        <- read_csv(params$hydra) |>
+  hydra        <- read_csv("hydra_report.csv") |>
                   mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
                                       " (",`Mutation Frequency`,")", sep = "")
                                       )
@@ -54,11 +48,15 @@ execute:
     hydra_RT <- hydra |> filter(Gene == "RT")
     hydra_IN <- hydra |> filter(Gene == "IN")
   
-  coverage     <- read_csv(params$coverage, col_names = FALSE)
+  coverage     <- read_csv("coverage_file.csv", col_names = FALSE)
     colnames(coverage) <- c("position","coverage")
   
-  hydra_vcf    <- read_delim(params$hydra_vcf, comment = "#", delim = '\t', col_names = FALSE)
+  hydra_vcf    <- read_delim("hydra.vcf", comment = "#", delim = '\t', col_names = FALSE)
     colnames(hydra_vcf) <- c("CHROM","GENE","POS","REF","ALT","FILTER","ALT_FREQ","COVERAGE","INFO")
+
+  run_params <- read_csv("run_params.csv", col_names = FALSE)
+    colnames(run_params) <- c("param", "val")
+    parameters <- run_params |> pivot_wider(names_from = param, values_from = val)
 ```
 
 -------------------------------------------------------------------------------------------
@@ -77,19 +75,26 @@ execute:
 
 ### Pipeline parameters
 
-**Minimum read depth**: `r run_params$length_cutoff` | **Minimum read quality**: `r run_params$min_read_qual`
+**Minimum read depth**: `r parameters$length_cutoff` | **Minimum read quality**: `r parameters$min_read_qual`
 
-**Minimum mutation frequency percent to report**: `r run_params$min_ac`
+**Minimum mutation frequency percent to report**: `r parameters$min_ac`
 
-**The minimum required allele count for variant to be considered**: `r run_params$min_ac`
+**The minimum required allele count for variant to be considered**: `r parameters$min_ac`
 
-**Minimum required read depth for variant to be considered**: `r run_params$min_dp`
+**Minimum required read depth for variant to be considered**: `r parameters$min_dp`
 
-**The minimum required frequency for mutation to be considered**: `r run_params$min_freq`
+**The minimum required frequency for mutation to be considered**: `r parameters$min_freq`
 
-**Minimum percentage a base needs to be incorporated into the consensus sequence**: `r run_params$consensus_pct`
+**Minimum percentage a base needs to be incorporated into the consensus sequence**: `r parameters$consensus_pct`
 
-**Algorith version**: 
+**Version control**: 
+- Quasitools        : `r parameters$quasitools`
+- SierraLocal       : `r parameters$Sierra`
+  - SierraPy        : `r parameters$SierraPy`
+  - Stanford HIVDB  : `r parameters$HIVdb`
+- Trimmomatic       : `r parameters$trimmomatic`
+- SeqKit            : `r parameters$seqkit`
+- BowTie2           : `r parameters$BowTie2`
 
 -------------------------------------------------------------------------------------------
 
@@ -129,9 +134,7 @@ Comments:
 library(gt)
 
 # Format and print table using gt
-
 sierrapy_dr |> 
-  filter(Drug_group == "NRTI") |>
   arrange(`Drug name`) |>  # Optional sorting
   gt() |> 
   tab_header(title = "Mutation HIVDB Scores: NRTI")
@@ -160,8 +163,6 @@ Comments:
 ## Sequencing analysis summary
 
 ### Read fragments
-
-@fig-read-histogram
 
 ```{r, echo=FALSE}
 #| label: fig-read-histogram
@@ -201,13 +202,10 @@ Comments:
 
 ### Genome coverage
 
-@fig-hiv_coverage further explores the impact of temperature on ozone level.
-
 ```{r, echo=FALSE}
 #| label: fig-hiv_coverage
 #| fig-cap: "Annotated genome with read coverage."
 #| warning: false
-
 
   library(tidyverse);library(ggplot2)
 

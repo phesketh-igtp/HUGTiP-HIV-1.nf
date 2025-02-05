@@ -14,13 +14,14 @@ nextflow.enable.dsl = 2
     /*
         IMPORT MODULES
     */
-    include { runTrimGalore }   from './modules/runTrimGalore.nf'
-    include { runfastQC }       from './modules/runfastQC.nf'
-    include { getReadStats }    from './modules/getReadStats.nf'
-    include { runMultiQC }      from './modules/runMultiQC.nf'
-    include { runHydra }        from './modules/runHydra.nf'
+    include { runTrimGalore  }  from './modules/runTrimGalore.nf'
+    include { runfastQC      }  from './modules/runfastQC.nf'
+    include { getReadStats   }  from './modules/getReadStats.nf'
+    include { runMultiQC     }  from './modules/runMultiQC.nf'
+    include { runHydra       }  from './modules/runHydra.nf'
     include { runSierralocal }  from './modules/runSierralocal.nf'
-    include { renderReport }    from './modules/renderReport.nf'
+    include { renderReport   }  from './modules/renderReport.nf'
+    include { getVersions    }  from './modules/getVersions.nf'
 
     /*
     ······································································································
@@ -139,6 +140,8 @@ nextflow.enable.dsl = 2
         MAIN WORKFLOW
     ······································································································
     */
+        // Produce version control files
+            getVersions( params.runID )
 
         // Run TimGalore on the reads
             runTrimGalore( params.runID, samples_ch )
@@ -175,6 +178,8 @@ nextflow.enable.dsl = 2
             runSierralocal.out.report_ch.view{ "runSierralocal: $it" }
 
         // Render the HTML output
-            renderReport( params.runID, merged_reports_ch )
+            renderReport( params.runID, 
+                            getVersions.out.versions,
+                            merged_reports_ch )
 
     }

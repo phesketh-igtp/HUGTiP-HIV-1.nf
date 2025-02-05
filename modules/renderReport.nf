@@ -8,6 +8,7 @@ process renderReport{
     
     input:
         val(runID)
+        path(versions, stageAs: "run_params.csv")
 
         tuple val(sampleID), 
                 path(lengths_res,   stageAs: "length-freq.tsv"),
@@ -15,7 +16,6 @@ process renderReport{
                 path(hydra_res,     stageAs: "hydra_report.csv"),
                 path(coverage_res,  stageAs: "coverage_file.csv"),
                 path(hydra_vcf,     stageAs: "hydra.vcf"),
-                path(runs_params,   stageAs: "run_params"),
                 path(sierrapy_res,  stageAs: "sierrapy.hiv1.csv")
 
     output:
@@ -25,17 +25,13 @@ process renderReport{
 
     script:
 
-        // path rmd from params.rmd
-        // path rmd_static from params.rmd_static 
-
         """
         sed -i '1d' ${coverage_res} # remove the header for the coverage file
         cut -f2 ${lengths_res} > read_lenths.tsv
         
         cp "${params.scriptDir}/Quarto/final-report.qmd" final-report.qmd
 
-        quarto render final-report.qmd  \\
-                    --to html,pdf --execute-params
+        quarto render final-report.qmd --to html,pdf --execute-params
         """
 }
 

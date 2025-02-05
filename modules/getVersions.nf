@@ -11,7 +11,7 @@ process getVersions {
     script:
 
         """
-            # Create the analysis parameters file
+        # Create the analysis parameters file
             echo "reporting_threshold,1" > run_params
             echo "consensus_pct,20" >> run_params
             echo "length_cutoff,50" >> run_params
@@ -22,12 +22,12 @@ process getVersions {
             echo "min_freq,0.2" >> run_params
             echo "min_read_qual,30" >> run_params
 
-            # Version controls
-            quasitools --version | sed -e "s/ version /v/g" >> run_params
-            sierrapy --version | sed -e "s/SierraPy /SierraPy,v/g" | sed -e 's/; Sierra /\nSierra,v/g' | sed -e 's/; HIVdb /\nHIVdb,/g' >> run_params
-            trim_galore -v | grep 'version' | sed -e "s/ //g; s/version/TrimGalore,v/g" >> run_params
-            seqkit -h | grep 'Version' | sed -e "s/Version: /seqkit,v/g" >> run_params
-            bowtie2 -h | grep 'Bowtie 2 version' | sed -e "s/Bowtie 2 version /BowTie2,v/g" >> run_params
+        # Version controls
+            quasitools --version | sed 's/ version /v/g' >> run_params
+            sierrapy --version | sed 's/; /\n/g' | sed 's/SierraPy /SierraPy,v/g' | sed 's/Sierra /Sierra,v/g' | sed 's/HIVdb /HIVdb,/g' >> run_params
+            trim_galore -v | grep 'version' | sed 's/ //g; s/version/TrimGalore,v/g' >> run_params
+            seqkit -h | grep 'Version' | sed 's/Version: /seqkit,v/g' >> run_params
+            bowtie2 --version | grep 'version' | sed 's/bowtie2-align-s version /BowTie2,v/g' >> run_params
 
             mv run_params run_params.csv
         """

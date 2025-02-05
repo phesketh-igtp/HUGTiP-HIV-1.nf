@@ -8,7 +8,13 @@ process renderReport{
     
     input:
         tuple val(sampleID), 
-                path(cns_json)
+                path(lengths_res),
+                path(stats_res),
+                path(hydra_res),
+                path(coverage_res),
+                path(hydra_vcf),
+                path(runs_params)
+                path(sierrapy_res)
 
     output:
         tuple val(sampleID), 
@@ -21,23 +27,18 @@ process renderReport{
         // path rmd_static from params.rmd_static 
 
         """
-        Rscript -e 'rmarkdown::render("/home/phesketh/Documents/GitHub/QuasiFlow/assets/hivdr.Rmd", 
-            params=list(
-                mutation_comments="${params.mutation_db_comments}", 
-                dr_report_hivdb="${params.outdir}/${cns_json}",
-                mutational_threshold=${params.min_freq},
-                minimum_read_depth=${params.min_dp},
-                minimum_percentage_cons=${params.consensus_pct}), 
-                output_file="hivdr_${sampleID}.html", output_dir = getwd())'
-
-        Rscript -e 'rmarkdown::render("/home/phesketh/Documents/GitHub/QuasiFlow/assets/hivdr_static.Rmd", 
-            params=list(
-                mutation_comments="${params.mutation_db_comments}",
-                dr_report_hivdb="${params.outdir}/${cns_json}",
-                mutational_threshold=${params.min_freq},
-                minimum_read_depth=${params.min_dp},
-                minimum_percentage_cons=${params.consensus_pct}), 
-                output_file="hivdr_${sampleID}.pdf", output_dir = getwd())'
-
+        sed -i '1d' ${coverage_res} # remove the header for the coverage file
+        cut -f2 ${lengths_res} > read_lenths.tsv
+            
+        quarto render --to html,pdf \
+                "${params.scriptDir}/Quarto/final-report.qmd" \\
+                --execute-params sampleID="${sampleID}" \\
+                                lengths="read_lenths.tsv" \\
+                                stats="${stats_res}" \\
+                                sierrapy="${sierrapy_res}" \\
+                                hydra="${hydra_res}" \\
+                                hydra_vcf="${hydra_vcf}" \\
+                                coverage="${coverage_res}"
+                                run_params="${runs_params}"
         """
 }

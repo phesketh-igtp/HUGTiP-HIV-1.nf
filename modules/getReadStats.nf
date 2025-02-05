@@ -13,8 +13,9 @@ process getReadStats {
                         path(reverse)
 
         output:
-                path("${sampleID}.length-freq.tsv"),    emit: length_freq
-                path("${sampleID}.stats.tsv"),          emit: stats_seq
+                tuple val(sampleID),
+                        path("${sampleID}.length-freq.tsv"),
+                        path("${sampleID}.stats.tsv"),          emit: report_ch
 
         script:
                 """

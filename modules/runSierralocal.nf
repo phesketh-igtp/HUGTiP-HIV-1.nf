@@ -13,8 +13,7 @@ process runSierralocal {
 
     output:
         tuple val(sampleID), 
-                path("${sampleID}.*.csv")
-                path("${sampleID}.*.json"), emit: sierrapy_out
+                path("${sampleID}.*.csv"), emit: report_ch
 
     script:
 

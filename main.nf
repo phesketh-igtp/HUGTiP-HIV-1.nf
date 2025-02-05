@@ -20,7 +20,7 @@ nextflow.enable.dsl = 2
     include { runMultiQC }      from './modules/runMultiQC.nf'
     include { runHydra }        from './modules/runHydra.nf'
     include { runSierralocal }  from './modules/runSierralocal.nf'
-    //include { renderReport }    from './modules/renderReport.nf'
+    include { renderReport }    from './modules/renderReport.nf'
 
     /*
     ······································································································
@@ -31,35 +31,38 @@ nextflow.enable.dsl = 2
     def helpMessage() {
         log.info"""
         ============================================================
-        AlfredUg/QuasiFlow  ~  version ${params.version}
+        HUGTiP-HIV-1.nf  ~  version ${params.version}
         ============================================================
         Usage:
+
         The typical command for running the pipeline is as follows:
-        nextflow run AlfredUg/QuasiFlow --reads <path to fastq files> --outdir <path to output directory>
+
+            nextflow run HUGTiP-HIV-1.nf/main.nf --samplesheet <samplesheet> --runID <name of run>
         
         Mandatory arguments:
-            --name                          Name of the run.
-            --samplesheet                   Path to input data samplesheet (must be a csv with 4 columns: sampleID,alias,forward_path,reverse_path)
+            --name                  [chr]   Name of the run.
+            --samplesheet           [chr]   Path to input data samplesheet (must be a csv with 4 columns: sampleID,forward,reverse,type)
+                                                sampleID        - name of sample
+                                                forward/reverse - complete paths to the read files
+                                                type            - sample or control.
 
         HyDRA arguments (optional):
-            --mutation_db		            Path to mutational database.
-            --reporting_threshold	        Minimum mutation frequency percent to report.
-            --consensus_pct		            Minimum percentage a base needs to be incorporated into the consensus sequence.
-            --min_read_qual	                Minimum quality for a position in a read to be masked.	     
-            --length_cutoff	                Reads which fall short of the specified length will be filtered out.
-            --score_cutoff		            Reads that have a median or mean quality score (depending on the score type specified) less than the score cutoff value will be filtered out.
-            --min_variant_qual              Minimum quality for variant to be considered later on in the pipeline.
-            --min_dp                        Minimum required read depth for variant to be considered later on in the pipeline.
-            --min_ac                        The minimum required allele count for variant to be considered later on in the pipeline
-            --min_freq                      The minimum required frequency for mutation to be considered in drug resistance report.
+            --mutation_db		    [chr]   Path to mutational database.
+            --reporting_threshold	[num]   Minimum mutation frequency percent to report (default: 1).
+            --consensus_pct		    [num]   Minimum percentage a base needs to be incorporated into the consensus sequence (default: 20).
+            --min_read_qual	        [num]   Minimum quality for a position in a read to be masked (default: 30).
+            --length_cutoff	        [num]   Reads which fall short of the specified length will be filtered out (default: 50).
+            --score_cutoff		    [num]   Reads that have a median or mean quality score (depending on the score type specified) less than the score cutoff value will be filtered out (default: 30).
+            --min_variant_qual      [num]   Minimum quality for variant to be considered later on in the pipeline (default: 30).
+            --min_dp                [num]   Minimum required read depth for variant to be considered later on in the pipeline (default: 100).
+            --min_ac                [num]   The minimum required allele count for variant to be considered later on in the pipeline (default: 5).
+            --min_freq              [num]   The minimum required frequency for mutation to be considered in drug resistance report (default: 0.2).
 
         Sierralocal arguments (optional):
             --xml                           Path to HIVdb ASI2 XML.
             --apobec-tsv                    Path to tab-delimited (tsv) HIVdb APOBEC DRM file.
             --comments-tsv                  Path to tab-delimited (tsv) HIVdb comments file.
         
-
-
         """.stripIndent()
     }
 
@@ -70,6 +73,14 @@ nextflow.enable.dsl = 2
     */
 
     workflow {
+
+        def color_purple = '\u001B[35m'
+        def color_green  = '\u001B[32m'
+        def color_red    = '\u001B[31m'
+        def color_reset  = '\u001B[0m'
+        def color_cyan   = '\u001B[36m'
+
+    
 
         // Create channel from sample sheet
             if (params.samplesheet == null) {
@@ -145,12 +156,20 @@ nextflow.enable.dsl = 2
             runMultiQC( params.runID, multiqc_zips, multiqc_htmls )
 
         // Run Hydra on the reads
-        runHydra( params.runID, runTrimGalore.out.trimmed_reads_ch )
+            runHydra( params.runID, runTrimGalore.out.trimmed_reads_ch )
 
         // Run SierraLocal on the reads
-        runSierralocal( params.runID, runHydra.out.cns_sequence )
+            runSierralocal( params.runID, runHydra.out.cns_sequence )
         
+        // Merge the channels for the final_report_ch
+        //runHydra.out.report_ch.view()
+        //runSierralocal.out.report_ch.view()
+            merged_reports_ch = getReadStats.out.report_ch
+                                    .join(runHydra.out.report_ch)
+                                    .join(runSierralocal.out.report_ch)
+                                    
+            merged_reports_ch.view()
         // Render the HTML output
-        //renderReport( params.runID, runSierralocal.out.cns_json_ch )
+            renderReport( params.runID, merged_reports_ch )
 
     }

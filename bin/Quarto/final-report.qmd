@@ -3,26 +3,62 @@ title: "HUGTiP HIV-1 Drug Resistance Analysis"
 author: "Poppy J Hesketh Best"
 date: "`r Sys.Date()`"
 format: 
-  html:
-    fig-width: 8
-    fig-height: 4
-    code-fold: true
-
+  html: default
+  pdf: default
+params:
+    sampleID: "sample-1"
+    lengths: "/home/phesketh/Documents/projects/HIV/test/readStats/sample-1.length-freq.tsv"
+    coverage: "/home/phesketh/Documents/projects/HIV/test/hydra/sample-1.coverage_file.csv"
+    stats: "/home/phesketh/Documents/projects/HIV/test/readStats/sample-1.stats.tsv"
+    sierrapy: "/home/phesketh/Documents/projects/HIV/test/sierra/sample-1.sierrapy.hiv1.csv"
+    hydra: "/home/phesketh/Documents/projects/HIV/test/hydra/sample-1.dr_report.csv"
+    hydra_vcf: "/home/phesketh/Documents/projects/HIV/test/hydra/sample-1.hydra.vcf"
+    run_params: "run_params"
+execute:
+    echo: false  # Hide code output unless necessary
 ---
 
 ```{r, echo=FALSE, quiet=TRUE}
+  library(tidyverse)
 
-#| label: Importing dataframes and prepping results
-library(tidyverse)
-
-hydra <- read_csv("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/hydra/sample-1.dr_report.csv")
-sierrapy <- read_csv("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/sierra/sample-1.sierrapy.hiv1.csv")
-vcf_annot <- read_delim("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/hydra/sample-1.mutation_report.aavf", delim = "\t", comment = "#", col_names = FALSE)
-colnames(vcf_annot) <- c("CHROM","GENE","POS","REF","ALT","FILTER","ALT_FREQ","COVERAGE","INFO")
-read_lengths <- read_csv("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/readStats/sample-1.length-freq.tsv")
-read_counts <- read_delim("/home/phesketh/Documents/GitHub/HUGTiP-HIV-1.nf/test-dir/test/readStats/sample-1.stats.tsv")
-sample_ID <- 'sample-1'
-
+# Accessing parameters in R
+  sample_ID    <- params$sampleID
+  
+  read_lengths <- read_csv(params$lengths)
+    colnames(read_lengths) <- c("length")
+  
+  read_counts  <- read_delim(params$stats)
+  
+  sierrapy     <- read_csv(params$sierrapy)
+    sierrapy_dr <- sierrapy |> 
+      select(-name, -subtype) |>  # Remove name and subtype columns
+      pivot_longer(cols = everything(),  # Pivot all remaining columns
+                  names_to = "Drug name", 
+                  values_to = "HIVDB Score") |>
+      filter(`HIVDB Score`>0) |> 
+      mutate(
+        `Drug susceptibility` = case_when(
+          `HIVDB Score` >= 0  & `HIVDB Score` <= 9   ~ "Susceptible",
+          `HIVDB Score` >= 10 & `HIVDB Score` <= 29  ~ "Low-level resistance",
+          `HIVDB Score` >= 30 & `HIVDB Score` <= 59  ~ "Intermediate resistance",
+          `HIVDB Score` >= 60                        ~ "High-level resistance",
+          TRUE ~ NA_character_  # Handles any unexpected cases
+        )
+      )
+  
+  hydra        <- read_csv(params$hydra) |>
+                  mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
+                                      " (",`Mutation Frequency`,")", sep = "")
+                                      )
+    hydra_PR <- hydra |> filter(Gene == "PR")
+    hydra_RT <- hydra |> filter(Gene == "RT")
+    hydra_IN <- hydra |> filter(Gene == "IN")
+  
+  coverage     <- read_csv(params$coverage, col_names = FALSE)
+    colnames(coverage) <- c("position","coverage")
+  
+  hydra_vcf    <- read_delim(params$hydra_vcf, comment = "#", delim = '\t', col_names = FALSE)
+    colnames(hydra_vcf) <- c("CHROM","GENE","POS","REF","ALT","FILTER","ALT_FREQ","COVERAGE","INFO")
 ```
 
 -------------------------------------------------------------------------------------------
@@ -41,13 +77,17 @@ sample_ID <- 'sample-1'
 
 ### Pipeline parameters
 
-**Minimum mutation frequency**:
+**Minimum read depth**: `r run_params$length_cutoff` | **Minimum read quality**: `r run_params$min_read_qual`
 
-**Minimum percentage a base needs to be incorporated into consensus sequence**:
+**Minimum mutation frequency percent to report**: `r run_params$min_ac`
 
-**Minimum read depth**:
+**The minimum required allele count for variant to be considered**: `r run_params$min_ac`
 
-#### SierraPy / Sierra-local
+**Minimum required read depth for variant to be considered**: `r run_params$min_dp`
+
+**The minimum required frequency for mutation to be considered**: `r run_params$min_freq`
+
+**Minimum percentage a base needs to be incorporated into the consensus sequence**: `r run_params$consensus_pct`
 
 **Algorith version**: 
 
@@ -59,33 +99,59 @@ sample_ID <- 'sample-1'
 
 ### RNA-dependent polymerase / RdRp
 
-**PI Major Resistance Mutations**:
+**Total Mutations**: `r nrow(hydra_PR)`
 
-**PI Accessory Resistance Mutations**:
+**PI Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(Category == "Major")) == 0) "None" else hydra_PR |> filter(Category == "Major") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Other PR Mutations**:
+**PI Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(Category == "Minor")) == 0) "None" else hydra_PR |> filter(Category == "Minor") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+
+**Other PR Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(Category == "Other")) == 0) "None" else hydra_PR |> filter(Category == "Other") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 Comments:
 
 
 ### Reverse Trascriptase  / RT
 
-**NNRTI Major Resistance Mutations**:
+**Total Mutations**: `r nrow(hydra_RT)`
 
-**NRTI Accessory Resistance Mutations**:
+**NNRTI Major Resistance Mutations (Frequency %)**: `r`
 
-**Other PR Mutations**:
+**NNRTI Minor Resistance Mutations (Frequency %)**: `r`
+
+**NRTI Accessory Resistance Mutations (Frequency %)**: `r`
+
+**Other PR Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(Category == "Other")) == 0) "None" else hydra_RT |> filter(Category == "Other") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+
+```{r, echo=FALSE}
+#| label: table-NRTI
+#| warning: false
+
+library(gt)
+
+# Format and print table using gt
+
+sierrapy_dr |> 
+  filter(Drug_group == "NRTI") |>
+  arrange(`Drug name`) |>  # Optional sorting
+  gt() |> 
+  tab_header(title = "Mutation HIVDB Scores: NRTI")
+
+```
 
 Comments:
 
 
 ### Intergrase / IN
 
-**INI Major Resistance Mutations**:
+**Total Mutations**: `r nrow(hydra_IN)`
 
-**INI Accessory Resistance Mutations**:
+**INI Major Resistance Mutations (Frequency %)**: `r`
 
-**Other PR Mutations**:
+**INI Minor Resistance Mutations (Frequency %)**: `r`
+
+**INI Accessory Resistance Mutations (Frequency %)**: `r`
+
+**Other PR Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(Category == "Other")) == 0) "None" else hydra_IN |> filter(Category == "Other") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 Comments:
 
@@ -106,7 +172,7 @@ Comments:
   library(tidyverse);library(ggplot2)
 
   read_lengths |>
-    ggplot( aes(x=count)) +
+    ggplot( aes(x=length)) +
       geom_histogram( binwidth=1, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
       ggtitle("Bin size = 1") +
       theme_bw() +
@@ -117,7 +183,7 @@ Comments:
   read_lengths |>
     mutate(sample = paste(sample_ID)) |>
     ggplot( aes(
-              y=count, 
+              y=length, 
               x = sample )
           ) +
       geom_boxplot() +
@@ -145,10 +211,10 @@ Comments:
 
   library(tidyverse);library(ggplot2)
 
-  ggplot(vcf_annot, 
+  ggplot(coverage, 
         aes(
-          x = POS, 
-          y = COVERAGE)
+          x = position, 
+          y = coverage)
         ) + 
     geom_line() +
     theme_bw() +
@@ -159,7 +225,7 @@ Comments:
     labs(x = "Position along HVB2 pol", y = "Depth of coverage (no. reads)") +
     geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = -0, fill = "blue")) +
     geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300, fill = "red")) +
-    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0, fill = "green")) +
+    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0, fill = "green"))
     
 
 

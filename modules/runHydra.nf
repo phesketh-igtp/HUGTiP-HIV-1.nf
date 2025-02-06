@@ -18,7 +18,7 @@ process runHydra{
 
         tuple val(sampleID),
                 path("${sampleID}.dr_report.csv"),
-                path("${sampleID}.coverage_file.csv"),
+                path("${sampleID}.hydra.coverage.tsv"),
                 path("${sampleID}.hydra.vcf"),          emit: report_ch
 
     script:
@@ -51,5 +51,7 @@ process runHydra{
             mv coverage_file.csv    ${sampleID}.coverage_file.csv
             mv hydra.vcf            ${sampleID}.hydra.vcf
             rm ${sampleID}_R1.fastq ${sampleID}_R2.fastq
+
+            samtools depth align.bam > ${sampleID}.hydra.coverage.tsv
         """
 }

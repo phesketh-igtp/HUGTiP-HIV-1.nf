@@ -15,7 +15,7 @@ execute:
   library(tidyverse)
 
 # Accessing parameters in R
-  sample_ID    <- params$sampleID
+  sample_ID    <- 'tmp'#params$sampleID
   
   read_lengths <- read_csv("length-freq.tsv")
     colnames(read_lengths) <- c("length")
@@ -41,11 +41,10 @@ execute:
   
   hydra        <- read_csv("hydra_report.csv") |>
                   mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
-                                      " (",`Mutation Frequency`,")", sep = "")
+                                      " (",`Mutation Frequency`,"%)", sep = "")
+                                      ) |>
+                  mutate(MutationID = paste0(Wildtype,Position,Mutation)
                                       )
-    hydra_PR <- hydra |> filter(Gene == "PR")
-    hydra_RT <- hydra |> filter(Gene == "RT")
-    hydra_IN <- hydra |> filter(Gene == "IN")
   
   coverage     <- read_csv("coverage_file.csv", col_names = FALSE)
     colnames(coverage) <- c("position","coverage")
@@ -56,6 +55,14 @@ execute:
   run_params <- read_csv("run_params.csv", col_names = FALSE)
     colnames(run_params) <- c("param", "val")
     parameters <- run_params |> pivot_wider(names_from = param, values_from = val)
+
+# Create the final mutations files for reporting the results
+  mutations_data <- read_delim("quasitools-mutation_db.tsv", delim = "\t") |> mutate(MutationID = paste0(Wildtype,Position,Mutation))
+  hydra_final <- left_join(hydra,mutations_data)
+      hydra_PR <- hydra_final |> filter(Gene == "PR")
+      hydra_RT <- hydra_final |> filter(Gene == "RT")
+      hydra_IN <- hydra_final |> filter(Gene == "IN")
+
 ```
 
 -------------------------------------------------------------------------------------------
@@ -87,13 +94,10 @@ execute:
 **Minimum percentage a base needs to be incorporated into the consensus sequence**: `r parameters$consensus_pct`
 
 **Version control**: 
-- Quasitools        : `r parameters$quasitools`
-- SierraLocal       : `r parameters$Sierra`
-  - SierraPy        : `r parameters$SierraPy`
-  - Stanford HIVDB  : `r parameters$HIVdb`
-- Trimmomatic       : `r parameters$trimmomatic`
-- SeqKit            : `r parameters$seqkit`
-- BowTie2           : `r parameters$BowTie2`
+- Quasitools              : `r parameters$quasitools`
+- Stanford HIVDR Tools/DB : `r parameters$HIVDB`
+- TrimGalore              : `r parameters$TrimGalore`
+- SeqKit                  : `r parameters$seqkit`
 
 -------------------------------------------------------------------------------------------
 
@@ -103,28 +107,30 @@ execute:
 
 ### RNA-dependent polymerase / RdRp
 
-**Total Mutations**: `r nrow(hydra_PR)`
+**Total Mutations**: `r if(nrow(hydra_PR) == 0) "None" else nrow(hydra_PR)`
 
-**PI Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(Category == "Major")) == 0) "None" else hydra_PR |> filter(Category == "Major") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Major"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**PI Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(Category == "Minor")) == 0) "None" else hydra_PR |> filter(Category == "Minor") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Other PR Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(Category == "Other")) == 0) "None" else hydra_PR |> filter(Category == "Other") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Accessory"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Accessory")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+
+**Other Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 Comments:
 
 
 ### Reverse Trascriptase  / RT
 
-**Total Mutations**: `r nrow(hydra_RT)`
+**Total Mutations**: `r if(nrow(hydra_RT) == 0) "None" else nrow(hydra_RT)`
 
-**NNRTI Major Resistance Mutations (Frequency %)**: `r`
+**Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Major"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**NNRTI Minor Resistance Mutations (Frequency %)**: `r`
+**Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**NRTI Accessory Resistance Mutations (Frequency %)**: `r`
+**Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Accessory"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Accessory")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Other PR Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(Category == "Other")) == 0) "None" else hydra_RT |> filter(Category == "Other") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Other Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 ```{r, echo=FALSE}
 #| label: table-NRTI
@@ -145,17 +151,18 @@ Comments:
 
 ### Intergrase / IN
 
-**Total Mutations**: `r nrow(hydra_IN)`
+**Total Mutations**: `r if(nrow(hydra_IN) == 0) "None" else nrow(hydra_IN)`
 
-**INI Major Resistance Mutations (Frequency %)**: `r`
+**Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(str_detect(Category, "Major"))) == 0) "None" else hydra_IN |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**INI Minor Resistance Mutations (Frequency %)**: `r`
+**Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_IN |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**INI Accessory Resistance Mutations (Frequency %)**: `r`
+**Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(str_detect(Category, "Accessory"))) == 0) "None" else hydra_IN |> filter(str_detect(Category, "Accessory")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Other PR Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(Category == "Other")) == 0) "None" else hydra_IN |> filter(Category == "Other") |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Other Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_IN |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 Comments:
+
 
 -------------------------------------------------------------------------------------------
 
@@ -206,28 +213,29 @@ Comments:
 #| fig-cap: "Annotated genome with read coverage."
 #| warning: false
 
-  library(tidyverse);library(ggplot2)
+  library(tidyverse)
 
   ggplot(coverage, 
-        aes(
-          x = position, 
-          y = coverage)
-        ) + 
-    geom_line() +
+      aes(
+        x = position, 
+        y = coverage
+        )
+      ) + 
+    geom_line(
+      size = 0.8
+      ) +
     theme_bw() +
     theme(
-      legend.position="none",
-      plot.title = element_text(size=11)
-    ) +
-    labs(x = "Position along HVB2 pol", y = "Depth of coverage (no. reads)") +
-    geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = -0, fill = "blue")) +
-    geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300, fill = "red")) +
-    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0, fill = "green"))
-    
-
-
-
-
+      legend.position = "none",
+      plot.title = element_text(size = 11)
+        ) +
+    labs(x = "Position along HXB2 pol", y = "Depth of coverage (no. reads)") +
+    geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = 0), fill = "blue", alpha = 0.3) +
+    annotate("text", x = 148, y = -900, label = "PR") + 
+    geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300), fill = "red", alpha = 0.3) +
+    annotate("text", x = 956, y = -900, label = "RT") + 
+    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0), fill = "green", alpha = 0.3) +
+    annotate("text", x = 2410, y = -900, label = "IN")
 
 ```
 

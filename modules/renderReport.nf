@@ -26,26 +26,15 @@ process renderReport{
     script:
 
         """
-        cat run_params.csv
         sed -i '1d' ${coverage_res} # remove the header for the coverage file
         cut -f2 ${lengths_res} > read_lenths.tsv
 
         cp "${params.scriptDir}/Quarto/final-report.qmd" final-report.qmd
+            sed -i "s/insert_sampleID/${sampleID}/" final-report.qmd
 
-            sed -i "s/insert_sampleID/${sampleID}" final-report.qmd
+        cp ${params.dbDir}/quasitools_assets/quasitools-mutation_db.tsv .
+        cp ${params.dbDir}/HIVDB/drug.groups.csv .
 
         quarto render final-report.qmd --to html,pdf --execute-params
-
         """
 }
-
-/*
-sampleID="${sampleID}" \\
-                                lengths="read_lenths.tsv" \\
-                                stats="${stats_res}" \\
-                                sierrapy="${sierrapy_res}" \\
-                                hydra="${hydra_res}" \\
-                                hydra_vcf="${hydra_vcf}" \\
-                                coverage="${coverage_res}"
-                                run_params="${runs_params}"
-                                */

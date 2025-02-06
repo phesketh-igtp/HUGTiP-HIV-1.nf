@@ -28,9 +28,8 @@ process getVersions {
             quasitools --version | sed 's/ version /v/g' >> versions
             trim_galore -v | grep 'version' | sed 's/ //g; s/version/TrimGalore,v/g' >> versions
             seqkit -h | grep 'Version' | sed 's/Version: /seqkit,v/g' >> versions
-            sierrapy --version >> versions
-            sed 's/SierraPy /SierraPy,v/g' versions | sed 's/; Sierra /; Sierra,v/g' | sed 's/; HIVdb /; HIVdb,/g' >> versions
-            #sed -i "s/;/\n/g" versions
+            sierrapy --version | sed -e 's/;/ |/g' >> versions
+            sed -i 's/SierraPy /HIVDB,SierraPy v/; s/Sierra /Sierra v/; s/HIVDB_/v/' versions
 
         # Rename as a csv file
             cat versions run_params > run_params.csv

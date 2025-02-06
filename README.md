@@ -26,12 +26,16 @@ git clone phesketh-igtp/HUGTiP-HIV-1.nf
 nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --help
 ```
 
-With the repository available locally, you can proceed with performing the test to ensure that everything works on your system.
+With the repository available locally, you can proceed with performing the test to ensure that everything works on your system. You may need to adjust the paths in the samplesheet to perform the test.
 ```{sh}
-nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet test/samplesheet.csv --runID test --outdir init-test -profile conda_on #OR: docker_on, singularity_on, aptainer_on
+nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf \
+            --samplesheet test/samplesheet.csv \
+            --runID test \
+            --outdir init-test \
+            -profile conda_on #OR: docker_on, singularity_on, aptainer_on
 ```
 
-You can compare the outputs from the test with the expected results in the rest directory (e.g. <code>test/sample-1.hiv1-dr.results.html</code>).
+You can compare the outputs from the test with the expected results in the rest directory (e.g. <code>test/*.results.html</code>).
 
 ----
 
@@ -51,7 +55,10 @@ To run the pipeline you require a csv file that contains 4 columns, consult the 
 ### Simple usage
 
 ```{sh}
-nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet /path/to/samplesheet.csv --outdir /path/to/output -p conda_on
+nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf \
+            --samplesheet /path/to/samplesheet.csv \
+            --outdir /path/to/output \
+            -p conda_on
 ```
 
 ### Parameters
@@ -73,20 +80,13 @@ nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet /path/to/samp
 - <code>--min_ac</code> : The minimum required allele count for variant to be considered later on in the pipeline
 - <code>--min_freq</code> : The minimum required frequency for mutation to be considered in drug resistance report.
 
-#### Sierralocal parameters
-
-**Optional parameters**
-
-- <code>--xml</code> : Path to HIVdb ASI2 XML.
-- <code>--apobec-tsv</code> : Path to tab-delimited (tsv) HIVdb APOBEC DRM file.
-- <code>--comments-tsv</code> : Path to tab-delimited (tsv) HIVdb comments file.
-
 #### Output parameters
 
 **Optional parameters**
 
 - <code>--outdir</code> : Path to directory where results will be saved (default: ./out)
 - <code>--workDir</code> : Path to directory where temporary work directory will be saved - can be deleted after analysis (default: ./work)
+
 
 ----
 

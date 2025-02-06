@@ -30,7 +30,6 @@ library(tidyverse, quiet=TRUE)
         pivot_longer(cols = everything(),  # Pivot all remaining columns
                       names_to = "Drug Name", 
                       values_to = "HIVDB Score") |>
-        filter(`HIVDB Score`>0) |> 
         mutate(
           `Drug susceptibility` = case_when(
             `HIVDB Score` >= 0  & `HIVDB Score` <= 9   ~ "Susceptible",
@@ -164,7 +163,7 @@ library(gt)
 ```
 
 Comments: 
-`r if (nrow(hydra_PR) == 0) "None" else hydra_PR |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n")`
+`r if (nrow(hydra_PR) == 0) "None" else hydra_PR |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -----
 
@@ -223,7 +222,7 @@ library(gt)
 ``` 
 
 Comments:
-`r if (nrow(hydra_RT) == 0) "None" else hydra_RT |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n")`
+`r if (nrow(hydra_RT) == 0) "None" else hydra_RT |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -----
 
@@ -260,7 +259,7 @@ library(gt)
 ```
 
 Comments:
-`r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n")`
+`r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -------------------------------------------------------------------------------------------
 

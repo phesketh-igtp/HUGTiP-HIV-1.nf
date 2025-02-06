@@ -3,7 +3,7 @@ title: "HUGTiP HIV-1 Drug Resistance Analysis"
 author: "Poppy J Hesketh Best"
 date: "`r Sys.Date()`"
 format: 
-  html: default
+  pdf: default
 prefer-html: true
 params:
     sampleID: "insert_sampleID"
@@ -12,7 +12,7 @@ execute:
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE}
-library(tidyverse, quiet=TRUE)
+library(tidyverse, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE)
 
 # Accessing parameters in R
 sample_ID    <- params$sampleID
@@ -96,11 +96,16 @@ hydra_IN <- hydra_final |> filter(Gene == "IN")
 **Minimum percentage a base needs to be incorporated into the consensus sequence**: `r parameters$consensus_pct`
 
 **Version control**: 
-- Quasitools              : `r parameters$quasitools`
-- Stanford HIVDR Tools/DB : `r parameters$HIVDB`
-- TrimGalore              : `r parameters$TrimGalore`
-- SeqKit                  : `r parameters$seqkit`
 
+Quasitools              : `r parameters$quasitools`
+
+Stanford HIVDR Tools/DB : `r parameters$HIVDB`
+
+TrimGalore              : `r parameters$TrimGalore`
+
+SeqKit                  : `r parameters$seqkit`
+
+-------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
 
 ## Drug resistance results 
@@ -119,7 +124,7 @@ hydra_IN <- hydra_final |> filter(Gene == "IN")
 
 **Other Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE}
 #| label: table-PI
 #| warning: false
 
@@ -156,7 +161,7 @@ Comments:
 
 **Other Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE}
 #| label: fig-NRTI
 #| fig-cap: "Nucleoside/Nucleotide Reverse Transcriptase Inhibitors (NRTIs)"
 #| warning: false
@@ -178,7 +183,7 @@ library(gt)
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE}
 #| label: fig-NNRTIs
 #| fig-cap: "Non-Nucleoside Reverse Transcriptase Inhibitors (NNRTIs)"
 #| warning: false
@@ -198,10 +203,12 @@ library(gt)
 
 ``` 
 
+-------------------------------------------------------------------------------------------
 Comments:
 `r if (nrow(hydra_RT) == 0) "None" else hydra_RT |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n")`
 
------
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
 
 ### Intergrase / IN
 
@@ -215,7 +222,7 @@ Comments:
 
 **Other Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_IN |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE}
 #| label: fig-INI
 #| fig-cap: "Integrase inhibitors (INIs)"
 #| warning: false
@@ -229,15 +236,16 @@ library(gt)
     arrange(`Drug Name`)  # Optional sorting
 
 # Check if there are any rows to display
-  if (nrow(filtered_data) == 0) {  } else {
-    filtered_data |> gt()
-  }
+  if (nrow(filtered_data) == 0) {  } else { filtered_data |> gt() }
 
 ```
+
+-------------------------------------------------------------------------------------------
 
 Comments:
 `r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n")`
 
+-------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
 
 ## Sequencing analysis summary
@@ -253,15 +261,14 @@ Comments:
 library(tidyverse); library(plotly)
 
 p1 <- read_lengths |>
-  mutate(sample = paste(sample_ID)) |>
-  ggplot(aes(x=length)) +
-    geom_histogram(binwidth=5, fill = "darkmagenta") +
-  ggtitle("Binwidth = 5") +
-  labs(x = "Read length (bp)", y = "Frequency") +
-  theme_bw()
+    mutate(sample = paste(sample_ID)) |>
+    ggplot(aes(x=length)) +
+        geom_histogram(binwidth=5, fill = "darkmagenta") +
+    ggtitle("Binwidth = 5") +
+    labs(x = "Read length (bp)", y = "Frequency") +
+    theme_bw()
 
-ggplotly(p1)
-
+p1
 
 ```
 
@@ -285,20 +292,20 @@ coverage_complete <- full_positions %>%
 p2 <- ggplot(coverage_complete, 
             aes(x = position, y = coverage)
             ) + 
-  geom_line(na.rm = TRUE) +
-  theme_bw() +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(size = 11)) +
-  labs(x = "Position along HXB2 pol", y = "Depth of coverage (no. reads)") +
-  geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = 0), fill = "blue", alpha = 0.3) +
-  annotate("text", x = 148, y = -900, label = "PR") + 
-  geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300), fill = "red", alpha = 0.3) +
-  annotate("text", x = 956, y = -900, label = "RT") + 
-  geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0), fill = "green", alpha = 0.3) +
-  annotate("text", x = 2410, y = -900, label = "IN") 
+    geom_line(na.rm = TRUE) +
+    theme_bw() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(size = 11)) +
+    labs(x = "Position along HXB2 pol", y = "Depth of coverage (no. reads)") +
+    geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = 0), fill = "blue", alpha = 0.3) +
+    annotate("text", x = 148, y = -900, label = "PR") + 
+    geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300), fill = "red", alpha = 0.3) +
+    annotate("text", x = 956, y = -900, label = "RT") + 
+    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0), fill = "green", alpha = 0.3) +
+    annotate("text", x = 2410, y = -900, label = "IN") 
 
-ggplotly(p2, tooltip = "all")
+p2
 
 ```
 

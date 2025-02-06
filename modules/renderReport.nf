@@ -19,9 +19,7 @@ process renderReport{
                 path(sierrapy_res,  stageAs: "sierrapy.hiv1.csv")
 
     output:
-        tuple val(sampleID), 
-                path('*.html'), 
-                path('*.pdf'),    emit: final_report_ch
+        path("${sampleID}.report.html")
 
     script:
 
@@ -29,12 +27,19 @@ process renderReport{
         sed -i '1d' ${coverage_res} # remove the header for the coverage file
         cut -f2 ${lengths_res} > read_lenths.tsv
 
-        cp "${params.scriptDir}/Quarto/final-report.qmd" final-report.qmd
+        cp ${params.scriptDir}/Quarto/final-report.qmd .
             sed -i "s/insert_sampleID/${sampleID}/" final-report.qmd
+        
+        #cp ${params.scriptDir}/Quarto/final-report-pdf.qmd .
+        #    sed -i "s/insert_sampleID/${sampleID}/" final-report-pdf.qmd
 
         cp ${params.dbDir}/quasitools_assets/quasitools-mutation_db.tsv .
         cp ${params.dbDir}/HIVDB/drug.groups.csv .
 
-        quarto render final-report.qmd --to html,pdf --execute-params
+        quarto render final-report.qmd --to html --execute-params
+        #quarto render final-report-pdf.qmd --to pdf --execute-params
+
+        mv final-report.html ${sampleID}.report.html
+        #mv final-report-pdf.pdf ${sampleID}.report.pdf
         """
 }

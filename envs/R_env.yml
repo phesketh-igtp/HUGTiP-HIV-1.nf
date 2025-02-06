@@ -19,3 +19,5 @@ dependencies:
 - r-seqinr
 - r-quarto=1.4.4
 - r-gt=0.11.1
+- r-plotly=4.10.4
+- pandoc=3

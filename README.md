@@ -1,12 +1,12 @@
 # HUGTiP HIV-1 Drug Resistance and Lineage Profiling
 
-Active development!
+Active development since 2025-01-20! Use with caution (all but the rendering of the final report work)
 
 ## Introduction
 
-This Nextflow Pipeline was build following similarly to [QuasiFlow](https://github.com/AlfredUg/QuasiFlow), and utilises [Quasitools HYDRA](https://phac-nml.github.io/quasitools/) for the generation of consensus HIV-1 sequences, and futher analysis of drug resistanc profiles using the [Sierra-local](https://github.com/hivdb/sierra-client/blob/master/python/README.md) through the python package [SierraPy](https://github.com/hivdb/sierra-client/blob/master/python/README.md). Please cite the relevant tools when utilising this workflow.
+This Nextflow Pipeline was build similarly to [QuasiFlow](https://github.com/AlfredUg/QuasiFlow), and utilises [Quasitools HYDRA](https://phac-nml.github.io/quasitools/) for the mapping, variant calling and generation of consensus HIV-1 polymerase. Futher classification of drug resistance profiles and scores is done using the [Sierra-local](https://github.com/hivdb/sierra-client/blob/master/python/README.md) through the python package [SierraPy](https://github.com/hivdb/sierra-client/blob/master/python/README.md). Please cite the relevant tools when utilising this workflow.
 
-## Instilation and Test
+## Installation and Test Run
 
 This pipeline was built and tested using Nextflow v24.10.1.5930, it has been largely tested using conda as the package manager, but is supported with Docker and Singularity container images built using [Seqera container webtool](https://seqera.io/containers/).
 

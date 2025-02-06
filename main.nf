@@ -170,12 +170,6 @@ nextflow.enable.dsl = 2
             merged_reports_ch = getReadStats.out.report_ch
                                     .join(runHydra.out.report_ch)
                                     .join(runSierralocal.out.report_ch)
-                                    
-            merged_reports_ch.view()
-
-            getReadStats.out.report_ch.view{ "getReadStats: $it" }
-            runHydra.out.report_ch.view{ "runHydra: $it" }
-            runSierralocal.out.report_ch.view{ "runSierralocal: $it" }
 
         // Render the HTML output
             renderReport( params.runID, 

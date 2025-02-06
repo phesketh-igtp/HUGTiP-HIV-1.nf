@@ -31,7 +31,7 @@ process renderReport{
             sed -i "s/insert_sampleID/${sampleID}/" final-report.qmd
         
         #cp ${params.scriptDir}/Quarto/final-report-pdf.qmd .
-        #    sed -i "s/insert_sampleID/${sampleID}/" final-report-pdf.qmd
+        #    sed -i "s/insert_sampleID/${sampleID}/g" final-report-pdf.qmd
 
         cp ${params.dbDir}/quasitools_assets/quasitools-mutation_db.tsv .
         cp ${params.dbDir}/HIVDB/drug.groups.csv .

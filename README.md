@@ -6,7 +6,9 @@ Active development since 2025-01-20! Use with caution (all but the rendering of 
 
 This Nextflow Pipeline was build similarly to [QuasiFlow](https://github.com/AlfredUg/QuasiFlow), and utilises [Quasitools HYDRA](https://phac-nml.github.io/quasitools/) for the mapping, variant calling and generation of consensus HIV-1 polymerase. Futher classification of drug resistance profiles and scores is done using the [Sierra-local](https://github.com/hivdb/sierra-client/blob/master/python/README.md) through the python package [SierraPy](https://github.com/hivdb/sierra-client/blob/master/python/README.md). Please cite the relevant tools when utilising this workflow.
 
-## Installation and Test Run
+
+
+## Installation
 
 This pipeline was built and tested using Nextflow v24.10.1.5930, it has been largely tested using conda as the package manager, but is supported with Docker and Singularity container images built using [Seqera container webtool](https://seqera.io/containers/).
 

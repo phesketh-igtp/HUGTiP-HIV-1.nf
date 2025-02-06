@@ -15,55 +15,79 @@ execute:
 library(tidyverse, quiet=TRUE)
 
 # Accessing parameters in R
-sample_ID    <- params$sampleID
+  sample_ID <- "insert_sampleID"
 
-read_lengths <- read_csv("read_lenths.tsv")
-colnames(read_lengths) <- c("length")
+  read_lengths <- read_csv("read_lenths.tsv")
+  colnames(read_lengths) <- c("length")
 
-read_counts  <- read_delim("stats.tsv")
+  read_counts <- read_delim("stats.tsv")
 
-sierrapy     <- read_csv("sierrapy.hiv1.csv")
-sierrapy_dr <- sierrapy |> 
-  select(-name, -subtype) |>  # Remove name and subtype columns
-  pivot_longer(cols = everything(),  # Pivot all remaining columns
-                names_to = "Drug Name", 
-                values_to = "HIVDB Score") |>
-  filter(`HIVDB Score`>0) |> 
-  mutate(
-    `Drug susceptibility` = case_when(
-      `HIVDB Score` >= 0  & `HIVDB Score` <= 9   ~ "Susceptible",
-      `HIVDB Score` >= 10 & `HIVDB Score` <= 29  ~ "Low-level resistance",
-      `HIVDB Score` >= 30 & `HIVDB Score` <= 59  ~ "Intermediate resistance",
-      `HIVDB Score` >= 60                        ~ "High-level resistance",
-      TRUE ~ NA_character_  # Handles any unexpected cases
-    )  )
-drug.groups <- read_csv("drug.groups.csv")
-sierrapy_dr <- left_join(sierrapy_dr, drug.groups, by = "Drug Name")
+  sierrapy <- read_csv("sierrapy.hiv1.csv")
+  drug.groups <- read_csv("drug.groups.csv")
 
-hydra        <- read_csv("hydra_report.csv") |>
-  mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
-                                " (",`Mutation Frequency`,"%)", sep = "")
-  ) |>
-  mutate(MutationID = paste0(Wildtype,Position,Mutation)
-  )
+    sierrapy_dr <- sierrapy |> 
+        select(-name, -subtype) |>  # Remove name and subtype columns
+        pivot_longer(cols = everything(),  # Pivot all remaining columns
+                      names_to = "Drug Name", 
+                      values_to = "HIVDB Score") |>
+        filter(`HIVDB Score`>0) |> 
+        mutate(
+          `Drug susceptibility` = case_when(
+            `HIVDB Score` >= 0  & `HIVDB Score` <= 9   ~ "Susceptible",
+            `HIVDB Score` >= 10 & `HIVDB Score` <= 29  ~ "Low-level resistance",
+            `HIVDB Score` >= 30 & `HIVDB Score` <= 59  ~ "Intermediate resistance",
+            `HIVDB Score` >= 60                        ~ "High-level resistance",
+            TRUE ~ NA_character_  # Handles any unexpected cases
+          ))
+    sierrapy_dr <- left_join(sierrapy_dr, drug.groups, by = "Drug Name")
 
-coverage     <- read_delim("coverage_file.csv", col_names = FALSE, delim = "\t")
-colnames(coverage) <- c("chr", "position","coverage")
+  hydra <- read_csv("hydra_report.csv") |>
+    mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
+                " (",`Mutation Frequency`,"%)", sep = "")) |>
+    mutate(MutationID = paste0(Wildtype,Position,Mutation)
+    )
 
-hydra_vcf    <- read_delim("hydra.vcf", comment = "#", delim = '\t', col_names = FALSE)
-colnames(hydra_vcf) <- c("CHROM","position","GENE","REF","ALT","COVERAGE","FILTER","INFO")
+  coverage <- read_delim("coverage_file.csv", col_names = FALSE, delim = "\t")
+  colnames(coverage) <- c("chr", "position","coverage")
+
+  hydra_vcf <- read_delim("hydra.vcf", comment = "#", delim = '\t', col_names = FALSE)
+  colnames(hydra_vcf) <- c("CHROM","position","GENE","REF","ALT","COVERAGE","FILTER","INFO")
 
 
-run_params <- read_csv("run_params.csv", col_names = FALSE)
-colnames(run_params) <- c("param", "val")
-parameters <- run_params |> pivot_wider(names_from = param, values_from = val)
+  run_params <- read_csv("run_params.csv", col_names = FALSE)
+  colnames(run_params) <- c("param", "val")
+  parameters <- run_params |> 
+      pivot_wider(names_from = param, values_from = val)
 
 # Create the final mutations files for reporting the results
-mutations_data <- read_delim("quasitools-mutation_db.tsv", delim = "\t") |> mutate(MutationID = paste0(Wildtype,Position,Mutation))
-hydra_final <- left_join(hydra,mutations_data)
-hydra_PR <- hydra_final |> filter(Gene == "PR")
-hydra_RT <- hydra_final |> filter(Gene == "RT")
-hydra_IN <- hydra_final |> filter(Gene == "IN")
+  mutations_data <- read_delim("quasitools-mutation_db.tsv", delim = "\t") |> 
+      mutate(MutationID = paste0(Wildtype,Position,Mutation))
+
+  if (nrow(hydra) > 0) {
+
+    hydra_final <- left_join(hydra, mutations_data)
+      hydra_PR <- hydra_final |> filter(Gene == "PR")
+      hydra_RT <- hydra_final |> filter(Gene == "RT")
+      hydra_IN <- hydra_final |> filter(Gene == "IN")
+
+  } else {
+
+    # Create empty data frames with the desired structure, even when no data in hydra
+    empty_columns <- c("Chromosome", "Gene", "Category", "Surveillance", 
+                        "Wildtype", "Position", "Mutation", 
+                        "Mutation Frequency", "Coverage",
+                        "Mutation_code", "MutationID")
+    
+    hydra_PR <- data.frame(matrix(ncol = length(empty_columns), nrow = 0))
+    colnames(hydra_PR) <- empty_columns
+    
+    hydra_RT <- data.frame(matrix(ncol = length(empty_columns), nrow = 0))
+    colnames(hydra_RT) <- empty_columns
+    
+    hydra_IN <- data.frame(matrix(ncol = length(empty_columns), nrow = 0))
+    colnames(hydra_IN) <- empty_columns
+
+  }
 
 ```
 
@@ -306,3 +330,11 @@ ggplotly(p2, tooltip = "all")
 
 
 ## Citations
+
+Ewels P. et al.  (2016) [MultiQC: summarize analysis results for multiple tools and samples in a single report.](https://doi.org/10.1093/bioinformatics/btw354) Bioinformatics, 32, 3047–3048.
+
+Ho J.C. et al.  (2019) [Sierra-local: a lightweight standalone application for drug resistance prediction.](https://joss.theoj.org/papers/10.21105/joss.01186.pdf) Softw. J. Open Source Softw., 4, 1186.
+
+Krueger F. (2012) [Trim Galore: A Wrapper Tool Around Cutadapt and FastQC to Consistently Apply Quality and Adapter Trimming to FastQ files, with Some Extra Functionality for MspI-Digested RRBS-Type (Reduced Representation Bisufite-Seq) Libraries.](http://www.bioinformatics.babraham.ac.uk/projects/trim\_galore/)
+
+Langmead B., Salzberg S.L. (2012) [Fast gapped-read alignment with Bowtie 2.](https://www.nature.com/articles/nmeth.1923) Nat. Methods, 9, 357–359.

@@ -166,7 +166,8 @@ library(gt)
 
 ```
 
-Comments: 
+Comments:
+
 `r if (nrow(hydra_PR) == 0) "None" else hydra_PR |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -----
@@ -226,6 +227,7 @@ library(gt)
 ``` 
 
 Comments:
+
 `r if (nrow(hydra_RT) == 0) "None" else hydra_RT |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -----
@@ -263,6 +265,7 @@ library(gt)
 ```
 
 Comments:
+
 `r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -------------------------------------------------------------------------------------------

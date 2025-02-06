@@ -4,7 +4,7 @@ process runTrimGalore {
 
     conda params.conda_main_envs
 
-    publishDir "${params.outdir}/${runID}/adaptors-trimming", mode: "copy", overwrite: false,
+    publishDir "${params.outdir}/${runID}/", mode: "copy", overwrite: false,
                 pattern: '.{out,csv,txt,tsv}'
 
     input:

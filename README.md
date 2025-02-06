@@ -4,12 +4,9 @@ Active development since 2025-01-20! Use with caution (all but the rendering of 
 
 ## Introduction
 
-This Nextflow Pipeline was build similarly to [QuasiFlow](https://github.com/AlfredUg/QuasiFlow), and utilises [Quasitools HYDRA](https://phac-nml.github.io/quasitools/) for the mapping, variant calling and generation of consensus HIV-1 polymerase. Futher classification of drug resistance profiles and scores is done using the [Sierra-local](https://github.com/hivdb/sierra-client/blob/master/python/README.md) through the python package [SierraPy](https://github.com/hivdb/sierra-client/blob/master/python/README.md). Please cite the relevant tools when utilising this workflow.
+This Nextflow Pipeline was build similarly to [QuasiFlow](https://github.com/AlfredUg/QuasiFlow), and utilises [Quasitools HYDRA](https://phac-nml.github.io/quasitools/) for the mapping, variant calling and generation of consensus HIV-1 polymerase. Futher classification of drug resistance profiles and scores is done using the [Sierra-local](https://github.com/hivdb/sierra-client/blob/master/python/README.md) through the python package [SierraPy](https://github.com/hivdb/sierra-client/blob/master/python/README.md). Please cite the relevant tools if utilising this workflow.
 
-<div style="text-align: center;">
-  <img src="png/pipeline.png" width="300" />
-</div>
-
+<img src="png/pipeline.png" width="400" />
 
 ## Installation
 
@@ -92,6 +89,29 @@ nextflow run ./phesketh-igtp/HUGTiP-HIV-1.nf/main.nf --samplesheet /path/to/samp
 - <code>--workDir</code> : Path to directory where temporary work directory will be saved - can be deleted after analysis (default: ./work)
 
 ----
+
+## Outputs
+
+```{sh}
+.
+├── fastQC
+│   ├── ${sampleID}_val_{1,2}_fastqc.html
+│   └── ${sampleID}_val_{1,2}_fastqc.zip
+├── final-report
+│   └── ${sampleID}.report.html
+├── hydra
+│   ├── ${sampleID}.consensus.fasta
+│   ├── ${sampleID}.dr_report.csv
+│   ├── ${sampleID}.hydra.coverage.tsv
+│   └── ${sampleID}.hydra.vcf
+├── multiQC
+│   └── raw_reads_multiqc_report.html
+├── readStats
+│   ├── ${sampleID}-1.length-freq.tsv
+│   └── ${sampleID}-1.stats.tsv
+└── sierra
+    └── ${sampleID}.sierrapy.hiv1.csv
+```
 
 ## Citations
 

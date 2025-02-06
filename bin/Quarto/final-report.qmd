@@ -119,10 +119,14 @@ library(tidyverse, quiet=TRUE)
 **Minimum percentage a base needs to be incorporated into the consensus sequence**: `r parameters$consensus_pct`
 
 **Version control**: 
-- Quasitools              : `r parameters$quasitools`
-- Stanford HIVDR Tools/DB : `r parameters$HIVDB`
-- TrimGalore              : `r parameters$TrimGalore`
-- SeqKit                  : `r parameters$seqkit`
+
+Quasitools              : `r parameters$quasitools`
+
+Stanford HIVDR Tools/DB : `r parameters$HIVDB`
+
+TrimGalore              : `r parameters$TrimGalore`
+
+SeqKit                  : `r parameters$seqkit`
 
 -------------------------------------------------------------------------------------------
 

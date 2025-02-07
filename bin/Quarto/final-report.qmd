@@ -146,26 +146,6 @@ SeqKit                  : `r parameters$seqkit`
 
 **Other Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-```{r, echo=FALSE}
-#| label: table-PI
-#| warning: false
-
-library(gt)
-
-# Format and print table using gt
-# Filter the dataset
-  filtered_data <- sierrapy_dr |> 
-    filter(Target == "PI") |> 
-    select(`Drug Name`, `HIVDB Score`, `Drug susceptibility`) |> 
-    arrange(`Drug Name`)  # Optional sorting
-
-# Check if there are any rows to display
-  if (nrow(filtered_data) == 0) { } else {
-    filtered_data |> gt()
-  }
-
-```
-
 Comments:
 
 `r if (nrow(hydra_PR) == 0) "None" else hydra_PR |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
@@ -176,55 +156,15 @@ Comments:
 
 **Total Mutations**: `r if(nrow(hydra_RT) == 0) "None" else nrow(hydra_RT)`
 
-**Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Major"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Major|NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+
+**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Major|NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Accessory"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Accessory")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Other Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
-
-```{r, echo=FALSE}
-#| label: fig-NRTI
-#| fig-cap: "Nucleoside/Nucleotide Reverse Transcriptase Inhibitors (NRTIs)"
-#| warning: false
-
-library(gt)
-
-# Format and print table using gt
-# Format and print table using gt
-# Filter the dataset
-  filtered_data <- sierrapy_dr |> 
-    filter(Target == "NRTI") |> 
-    select(`Drug Name`, `HIVDB Score`, `Drug susceptibility`) |> 
-    arrange(`Drug Name`)  # Optional sorting
-
-# Check if there are any rows to display
-  if (nrow(filtered_data) == 0) {  } else {
-    filtered_data |> gt()
-  }
-
-```
-
-```{r, echo=FALSE}
-#| label: fig-NNRTIs
-#| fig-cap: "Non-Nucleoside Reverse Transcriptase Inhibitors (NNRTIs)"
-#| warning: false
-
-library(gt)
-
-# Format and print table using gt
-  filtered_data <- sierrapy_dr |> 
-    filter(Target == "NNRTI") |> 
-    select(`Drug Name`, `HIVDB Score`, `Drug susceptibility`) |> 
-    arrange(`Drug Name`)  # Optional sorting
-
-# Check if there are any rows to display
-  if (nrow(filtered_data) == 0) {  } else {
-    filtered_data |> gt()
-  }
-
-``` 
 
 Comments:
 
@@ -244,30 +184,30 @@ Comments:
 
 **Other Mutations (Frequency %)**: `r if(nrow(hydra_IN |> filter(str_detect(Category, "Other"))) == 0) "None" else hydra_IN |> filter(str_detect(Category, "Other")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
+Comments:
+
+`r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
+
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+
+## Drug Resistance HIVDB Scores
+
 ```{r, echo=FALSE}
-#| label: fig-INI
-#| fig-cap: "Integrase inhibitors (INIs)"
+#| label: fig-HIVDB_SCORES
+#| fig-cap: "HIVDB Drug Resistance Scores"
 #| warning: false
 
 library(gt)
 
 # Format and print table using gt
-  filtered_data <- sierrapy_dr |> 
-    filter(Target == "IN") |> 
-    select(`Drug Name`, `HIVDB Score`, `Drug susceptibility`) |> 
-    arrange(`Drug Name`)  # Optional sorting
+sierrapy_dr |>
+    arrange(`Target`)  |> # Optional sorting
+    select(`Target`, `Drug Name`, `HIVDB Score`, `Drug susceptibility`) |>
+  gt()
+``` 
 
-# Check if there are any rows to display
-  if (nrow(filtered_data) == 0) {  } else {
-    filtered_data |> gt()
-  }
-
-```
-
-Comments:
-
-`r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
-
+-------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
 
 ## Sequencing analysis summary

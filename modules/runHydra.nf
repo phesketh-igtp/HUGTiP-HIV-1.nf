@@ -53,5 +53,8 @@ process runHydra{
             rm ${sampleID}_R1.fastq ${sampleID}_R2.fastq
 
             samtools depth align.bam > ${sampleID}.hydra.coverage.tsv
+
+        # replace hxb2_pol with sampleID in dr_report.csv
+            sed -i 's/hxb2_pol/${sampleID}/g' ${sampleID}.dr_report.csv
         """
 }

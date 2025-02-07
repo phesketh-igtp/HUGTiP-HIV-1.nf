@@ -138,7 +138,7 @@ SeqKit                  : `r parameters$seqkit`
 
 **Total Mutations**: `r if(nrow(hydra_PR) == 0) "None" else nrow(hydra_PR)`
 
-**Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Major"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Major" ))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 

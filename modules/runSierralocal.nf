@@ -13,7 +13,7 @@ process runSierralocal {
 
     output:
         tuple val(sampleID), 
-                path("${sampleID}.*.csv"), emit: report_ch
+                path("${sampleID}.*.csv"), emit: report_ch, optional: true
 
     script:
 
@@ -25,7 +25,7 @@ process runSierralocal {
                     ${sampleID}.sierrapy.hiv1*json \\
                     ${sampleID}.sierrapy.hiv1.csv
 
-        touch ${sampleID}.sierrapy.hiv1.json
+       
         touch ${sampleID}.sierrapy.hiv1.csv
         """
 }

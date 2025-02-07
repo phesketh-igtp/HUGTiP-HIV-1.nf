@@ -24,5 +24,8 @@ process runSierralocal {
         python3 ${params.scriptDir}/py/json2csv.py \\
                     ${sampleID}.sierrapy.hiv1*json \\
                     ${sampleID}.sierrapy.hiv1.csv
+
+        touch ${sampleID}.sierrapy.hiv1.json
+        touch ${sampleID}.sierrapy.hiv1.csv
         """
 }

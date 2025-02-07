@@ -4,7 +4,7 @@ process renderReport{
 
     conda params.conda_R_envs
 
-    publishDir "${params.outdir}/${runID}/final-report", mode: 'copy'
+    publishDir "${params.outdir}/${runID}/final-report", mode: 'copy', overwrite: true
     
     input:
         val(runID)

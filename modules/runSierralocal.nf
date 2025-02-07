@@ -4,7 +4,7 @@ process runSierralocal {
 
     conda params.conda_main_envs
 
-    publishDir "${params.outdir}/${runID}/sierra", mode: 'copy'
+    publishDir "${params.outdir}/${runID}/sierra", mode: 'copy', overwrite: true
 
     input:
         val(runID)

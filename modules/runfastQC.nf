@@ -4,7 +4,7 @@ process runfastQC {
 
         conda params.conda_main_envs
 
-        publishDir "${params.outdir}/${runID}/fastQC/", mode: "copy"
+        publishDir "${params.outdir}/${runID}/fastQC/", mode: "copy", overwrite: true
 
         input:
                 val(runID)

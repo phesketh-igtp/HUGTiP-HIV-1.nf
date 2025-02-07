@@ -4,8 +4,8 @@ process runTrimGalore {
 
     conda params.conda_main_envs
 
-    publishDir "${params.outdir}/${runID}/", mode: "copy", overwrite: false,
-                pattern: '.{out,csv,txt,tsv}'
+    publishDir "${params.outdir}/${runID}/", mode: "copy", overwrite: true,
+                                pattern: '.{out,csv,txt,tsv}'
 
     input:
         val(runID)

@@ -4,7 +4,7 @@ process getReadStats {
 
         conda params.conda_main_envs
 
-        publishDir "${params.outdir}/${runID}/readStats/", mode: "copy"
+        publishDir "${params.outdir}/${runID}/readStats/", mode: "copy", overwrite: true
 
         input:
                 val(runID)

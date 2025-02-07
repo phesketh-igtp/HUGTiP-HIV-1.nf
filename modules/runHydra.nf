@@ -4,7 +4,7 @@ process runHydra{
 
     conda params.conda_main_envs
     
-    publishDir "${params.outdir}/${runID}/hydra/", mode: 'copy'
+    publishDir "${params.outdir}/${runID}/hydra/", mode: 'copy', overwrite: true
 
     input:
         val(runID)

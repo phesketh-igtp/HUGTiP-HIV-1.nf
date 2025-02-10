@@ -24,22 +24,27 @@ process renderReport{
     script:
 
         """
-        sed -i '1d' ${coverage_res} # remove the header for the coverage file
-        cut -f2 ${lengths_res} > read_lenths.tsv
+        # Modify the results for rendering
+            sed -i '1d' ${coverage_res} # remove the header for the coverage file
+            cut -f2 ${lengths_res} > read_lenths.tsv
 
-        cp ${params.scriptDir}/Quarto/final-report.qmd .
-            sed -i "s/insert_sampleID/${sampleID}/" final-report.qmd
+        # Copy over and edit the Rmd file
+            cp ${params.scriptDir}/Quarto/final-report.Rmd .
+                sed -i "s/insert_sampleID/${sampleID}/" final-report.qmd
         
-        #cp ${params.scriptDir}/Quarto/final-report-pdf.qmd .
-        #    sed -i "s/insert_sampleID/${sampleID}/g" final-report-pdf.qmd
+        # Copy over the ref data
+            cp ${params.dbDir}/quasitools_assets/quasitools-mutation_db.tsv .
+            cp ${params.dbDir}/HIVDB/drug.groups.csv .
 
-        cp ${params.dbDir}/quasitools_assets/quasitools-mutation_db.tsv .
-        cp ${params.dbDir}/HIVDB/drug.groups.csv .
+        # Render report
+            Rscript -e "rmarkdown::render('final-report.Rmd', output_format = 'html_document')"
+            Rscript -e "rmarkdown::render('final-report.Rmd', output_format = 'pdf_document')"
 
-        quarto render final-report.qmd --to html --execute-params
-        #quarto render final-report-pdf.qmd --to pdf --execute-params
+        # Rename the outputs
+            mv final-report.html ${sampleID}.report.html
+            mv final-report-pdf.pdf ${sampleID}.report.pdf
 
-        mv final-report.html ${sampleID}.report.html
-        #mv final-report-pdf.pdf ${sampleID}.report.pdf
+        # Remove temporary files
+            rm final-report.Rmd quasitools-mutation_db.tsv drug.groups.csv
         """
 }

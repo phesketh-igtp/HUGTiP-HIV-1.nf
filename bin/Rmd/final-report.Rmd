@@ -2,74 +2,71 @@
 title: "HUGTiP HIV-1 Drug Resistance Analysis"
 author: "Poppy J Hesketh Best"
 date: "`r Sys.Date()`"
-format: 
-  html: default
-prefer-html: true
+output: html_document
 params:
     sampleID: "insert_sampleID"
-execute:
-    echo: false  # Hide code output unless necessary
 ---
+
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE, quiet=TRUE}
 library(tidyverse, quiet=TRUE)
 
 # Accessing parameters in R
-  sample_ID <- "insert_sampleID"
+    sample_ID <- "insert_sampleID"
 
-  read_lengths <- read_csv("read_lenths.tsv")
-  colnames(read_lengths) <- c("length")
+    read_lengths <- read_csv("read_lenths.tsv")
+    colnames(read_lengths) <- c("length")
 
-  read_counts <- read_delim("stats.tsv")
+    read_counts <- read_delim("stats.tsv")
 
-  sierrapy <- read_csv("sierrapy.hiv1.csv")
-  drug.groups <- read_csv("drug.groups.csv")
+    sierrapy <- read_csv("sierrapy.hiv1.csv")
+    drug.groups <- read_csv("drug.groups.csv")
 
-    sierrapy_dr <- sierrapy |> 
-        select(-name, -subtype) |>  # Remove name and subtype columns
-        pivot_longer(cols = everything(),  # Pivot all remaining columns
-                      names_to = "Drug Name", 
-                      values_to = "HIVDB Score") |>
-        mutate(
-          `Drug susceptibility` = case_when(
-            `HIVDB Score` >= 0  & `HIVDB Score` <= 9   ~ "Susceptible",
-            `HIVDB Score` >= 10 & `HIVDB Score` <= 29  ~ "Low-level resistance",
-            `HIVDB Score` >= 30 & `HIVDB Score` <= 59  ~ "Intermediate resistance",
-            `HIVDB Score` >= 60                        ~ "High-level resistance",
-            TRUE ~ NA_character_  # Handles any unexpected cases
-          ))
-    sierrapy_dr <- left_join(sierrapy_dr, drug.groups, by = "Drug Name")
+        sierrapy_dr <- sierrapy |> 
+            select(-name, -subtype) |>  # Remove name and subtype columns
+            pivot_longer(cols = everything(),  # Pivot all remaining columns
+                        names_to = "Drug Name", 
+                        values_to = "HIVDB Score") |>
+            mutate(
+            `Drug susceptibility` = case_when(
+                `HIVDB Score` >= 0  & `HIVDB Score` <= 9   ~ "Susceptible",
+                `HIVDB Score` >= 10 & `HIVDB Score` <= 29  ~ "Low-level resistance",
+                `HIVDB Score` >= 30 & `HIVDB Score` <= 59  ~ "Intermediate resistance",
+                `HIVDB Score` >= 60                        ~ "High-level resistance",
+                TRUE ~ NA_character_  # Handles any unexpected cases
+            ))
+        sierrapy_dr <- left_join(sierrapy_dr, drug.groups, by = "Drug Name")
 
-  hydra <- read_csv("hydra_report.csv") |>
-    mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
-                " (",`Mutation Frequency`,"%)", sep = "")) |>
-    mutate(MutationID = paste0(Wildtype,Position,Mutation)
-    )
+    hydra <- read_csv("hydra_report.csv") |>
+        mutate(Mutation_code = paste0(Wildtype,Position,Mutation,
+                    " (",`Mutation Frequency`,"%)", sep = "")) |>
+        mutate(MutationID = paste0(Wildtype,Position,Mutation)
+        )
 
-  coverage <- read_delim("coverage_file.csv", col_names = FALSE, delim = "\t")
-  colnames(coverage) <- c("chr", "position","coverage")
+    coverage <- read_delim("coverage_file.csv", col_names = FALSE, delim = "\t")
+    colnames(coverage) <- c("chr", "position","coverage")
 
-  hydra_vcf <- read_delim("hydra.vcf", comment = "#", delim = '\t', col_names = FALSE)
-  colnames(hydra_vcf) <- c("CHROM","position","GENE","REF","ALT","COVERAGE","FILTER","INFO")
+    hydra_vcf <- read_delim("hydra.vcf", comment = "#", delim = '\t', col_names = FALSE)
+    colnames(hydra_vcf) <- c("CHROM","position","GENE","REF","ALT","COVERAGE","FILTER","INFO")
 
 
-  run_params <- read_csv("run_params.csv", col_names = FALSE)
-  colnames(run_params) <- c("param", "val")
-  parameters <- run_params |> 
-      pivot_wider(names_from = param, values_from = val)
+    run_params <- read_csv("run_params.csv", col_names = FALSE)
+    colnames(run_params) <- c("param", "val")
+    parameters <- run_params |> 
+        pivot_wider(names_from = param, values_from = val)
 
 # Create the final mutations files for reporting the results
-  mutations_data <- read_delim("quasitools-mutation_db.tsv", delim = "\t") |> 
-      mutate(MutationID = paste0(Wildtype,Position,Mutation))
+    mutations_data <- read_delim("quasitools-mutation_db.tsv", delim = "\t") |> 
+        mutate(MutationID = paste0(Wildtype,Position,Mutation))
 
-  if (nrow(hydra) > 0) {
+    if (nrow(hydra) > 0) {
 
-    hydra_final <- left_join(hydra, mutations_data)
-      hydra_PR <- hydra_final |> filter(Gene == "PR")
-      hydra_RT <- hydra_final |> filter(Gene == "RT")
-      hydra_IN <- hydra_final |> filter(Gene == "IN")
+        hydra_final <- left_join(hydra, mutations_data)
+        hydra_PR <- hydra_final |> filter(Gene == "PR")
+        hydra_RT <- hydra_final |> filter(Gene == "RT")
+        hydra_IN <- hydra_final |> filter(Gene == "IN")
 
-  } else {
+    } else {
 
     # Create empty data frames with the desired structure, even when no data in hydra
     empty_columns <- c("Chromosome", "Gene", "Category", "Surveillance", 
@@ -86,7 +83,7 @@ library(tidyverse, quiet=TRUE)
     hydra_IN <- data.frame(matrix(ncol = length(empty_columns), nrow = 0))
     colnames(hydra_IN) <- empty_columns
 
-  }
+    }
 
 ```
 
@@ -140,7 +137,7 @@ SeqKit                  : `r parameters$seqkit`
 
 **Major Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Major" ))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Major")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Minor|PIMinor" ))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Accessory Resistance Mutations (Frequency %)**: `r if(nrow(hydra_PR |> filter(str_detect(Category, "Accessory"))) == 0) "None" else hydra_PR |> filter(str_detect(Category, "Accessory")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
@@ -148,7 +145,7 @@ SeqKit                  : `r parameters$seqkit`
 
 Comments:
 
-`r if (nrow(hydra_PR) == 0) "None" else hydra_PR |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
+`r if (nrow(hydra_PR) == 0) "None" else hydra_PR |> select(MutationID, Comment) |> mutate(combined = paste0(Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -----
 
@@ -156,9 +153,9 @@ Comments:
 
 **Total Mutations**: `r if(nrow(hydra_RT) == 0) "None" else nrow(hydra_RT)`
 
-**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Major|NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Major|NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "NRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
@@ -168,7 +165,7 @@ Comments:
 
 Comments:
 
-`r if (nrow(hydra_RT) == 0) "None" else hydra_RT |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
+`r if (nrow(hydra_RT) == 0) "None" else hydra_RT |> select(MutationID, Comment) |> mutate(combined = paste0(Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -----
 
@@ -186,7 +183,7 @@ Comments:
 
 Comments:
 
-`r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(MutationID, ": ", Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
+`r if (nrow(hydra_IN) == 0) "None" else hydra_IN |> select(MutationID, Comment) |> mutate(combined = paste0(Comment)) |> pull(combined) |> paste(collapse = "\n\n")`
 
 -------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
@@ -202,9 +199,9 @@ library(gt)
 
 # Format and print table using gt
 sierrapy_dr |>
-    arrange(`Target`)  |> # Optional sorting
+    arrange(`HIVDB Score`, `Target`)  |>
     select(`Target`, `Drug Name`, `HIVDB Score`, `Drug susceptibility`) |>
-  gt()
+    gt()
 ``` 
 
 -------------------------------------------------------------------------------------------
@@ -214,22 +211,20 @@ sierrapy_dr |>
 
 ### Read fragments
 
-```{r}
+```{r fig-read-histogram, fig.cap="Histogram of read lengths", warning=FALSE}
 #| label: fig-read-histogram
 #| fig-cap: "Histogram of read lengths"
 #| warning: false
-#| layout: [[50,50], [100]]
 
 library(tidyverse); library(plotly)
 
 p1 <- read_lengths |>
-  mutate(sample = paste(sample_ID)) |>
-  ggplot(aes(x=length)) +
-    geom_histogram(binwidth=5, fill = "darkmagenta") +
-  ggtitle("Binwidth = 5") +
-  labs(x = "Read length (bp)", y = "Frequency") +
-  theme_bw()
-
+    mutate(sample = paste(sample_ID)) |>
+    ggplot(aes(x=length)) +
+        geom_histogram(binwidth=5, fill = "darkmagenta") +
+    ggtitle("Binwidth = 5") +
+    labs(x = "Read length (bp)", y = "Frequency") +
+    theme_bw()
 p1
 
 
@@ -237,7 +232,7 @@ p1
 
 ### Genome coverage
 
-```{r}
+```{r fig-read-histogram, fig.cap="HXB2 Polymerase coverage of read lengths", warning=FALSE}
 #| label: fig-hiv_coverage
 #| fig-cap: "Annotated genome with read coverage."
 #| warning: false
@@ -249,27 +244,26 @@ full_positions <- tibble(position = full_seq(coverage$position, 1))
 
 # Join with existing data, filling missing positions with NA
 coverage_complete <- full_positions %>%
-  left_join(coverage, by = "position")
+    left_join(coverage, by = "position")
 
 # create the plot
 p2 <- ggplot(coverage_complete, 
             aes(x = position, y = coverage)
             ) + 
-  geom_line(na.rm = TRUE) +
-  theme_bw() +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(size = 11)) +
-  labs(x = "Position along HXB2 pol", y = "Depth of coverage (no. reads)") +
-  geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = 0), fill = "blue", alpha = 0.3) +
-  annotate("text", x = 148, y = -900, label = "PR") + 
-  geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300), fill = "red", alpha = 0.3) +
-  annotate("text", x = 956, y = -900, label = "RT") + 
-  geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0), fill = "green", alpha = 0.3) +
-  annotate("text", x = 2410, y = -900, label = "IN") 
+    geom_line(na.rm = TRUE) +
+    theme_bw() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(size = 11)) +
+    labs(x = "Position along HXB2 pol", y = "Depth of coverage (no. reads)") +
+    geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = 0), fill = "blue", alpha = 0.3) +
+    annotate("text", x = 148, y = -900, label = "PR") + 
+    geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300), fill = "red", alpha = 0.3) +
+    annotate("text", x = 956, y = -900, label = "RT") + 
+    geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0), fill = "green", alpha = 0.3) +
+    annotate("text", x = 2410, y = -900, label = "IN") 
 
 p2
-
 ```
 
 -------------------------------------------------------------------------------------------

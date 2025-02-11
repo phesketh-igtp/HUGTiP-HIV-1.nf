@@ -95,7 +95,7 @@ library(tidyverse, quiet=TRUE)
 
 **Query ID**: `r sample_ID`
 
-**Total of reads**: `r sum(read_counts$num_seqs, na.rm = TRUE)` (PE: `r mean(read_counts$num_seqs, na.rm = TRUE)`)
+**Total of reads**: `r scales::numeric(sum(read_counts$num_seqs, na.rm = TRUE))` (PE: `r scales::numeric(mean(read_counts$num_seqs, na.rm = TRUE))`)
 
 **HIV subtype**: `r sierrapy$subtype`
 

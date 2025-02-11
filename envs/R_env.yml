@@ -21,3 +21,4 @@ dependencies:
 - r-gt=0.11.1
 - r-plotly=4.10.4
 - pandoc=3
+- r-scales=1.3.0

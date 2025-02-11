@@ -46,5 +46,6 @@ process renderReport{
 
         # Remove temporary files
             rm final-report.Rmd quasitools-mutation_db.tsv drug.groups.csv
+            
         """
 }

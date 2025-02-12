@@ -153,9 +153,9 @@ Comments:
 
 **Total Mutations**: `r if(nrow(hydra_RT) == 0) "None" else nrow(hydra_RT)`
 
-**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(Category == "NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "NRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(sCategory == "NRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 

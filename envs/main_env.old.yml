@@ -1,0 +1,23 @@
+name: main_env
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - fastqc=0.11.8
+  - multiqc=1.27
+  - trim-galore=0.6.10
+  - biopython=1.84
+  - bowtie2=2.5.4
+  - bzip2=1.0.8
+  - numpy=2.2.1
+  - pip=24.3.1
+  - python=3.10.0
+  - quasitools=0.7.0
+  - samtools=1.21
+  - scipy=1.15.1
+  - setuptools=75.8.0
+  - sqlite=3.47.2
+  - seqkit=2.9.0
+  - pip:
+    - sierrapy==0.4.3

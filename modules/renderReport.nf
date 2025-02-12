@@ -4,6 +4,16 @@ process renderReport{
 
     conda params.conda_R_envs
 
+    container { 
+                if (workflow.containerEngine == 'docker') {
+                        params.docker_R_img
+                } else if (workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer') {
+                        params.singularity_R_img
+                } else { 
+                        null 
+                } 
+                }
+
     publishDir "${params.outdir}/${runID}/final-report", mode: 'copy', overwrite: true
     
     input:

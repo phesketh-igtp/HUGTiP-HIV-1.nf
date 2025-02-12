@@ -153,9 +153,9 @@ Comments:
 
 **Total Mutations**: `r if(nrow(hydra_RT) == 0) "None" else nrow(hydra_RT)`
 
-**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(Category == "NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NNRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "^NNRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NNRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
-**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(sCategory == "NRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
+**Major NRTI Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "^NRTI"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Major|NRTI")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
 **Minor Resistance Mutations (Frequency %)**: `r if(nrow(hydra_RT |> filter(str_detect(Category, "Minor"))) == 0) "None" else hydra_RT |> filter(str_detect(Category, "Minor")) |> select(Mutation_code) |> deframe() |> paste(collapse = ", ")`
 
@@ -269,6 +269,11 @@ ggplotly(p2)
 
 -------------------------------------------------------------------------------------------
 
+## Methods
+
+Illumina reads are quality controlled and trimmed of known Illumina adaptors with Trim_galore, fastQC/multiQC are used to visualise the overall quality of the Illumina reads. Trimmed reads are parsed to Quasitools HYDRA that performs read mapping to the HIV-1 HxB2 reference genomes using bowtie2. Variants are called and queried against a list of known mutations from the Stanford HIV resistance mutation database. A consensus genomes is also generated. The conensus genome is then submitted to the Stanford HIVDB server and drug resistance scores are calcualted (@fig-HIVDB_SCORES). Seqkit and Samtools are used to generated covarage profiles across the genomes (@fig-hiv_coverage) and read length frequencies (@fig-read-histogram).
+
+-------------------------------------------------------------------------------------------
 
 ## Citations
 

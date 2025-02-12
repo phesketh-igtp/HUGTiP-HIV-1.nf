@@ -38,11 +38,11 @@ process renderReport{
 
         # Render report
             Rscript -e "rmarkdown::render('final-report.Rmd', output_format = 'html_document')"
-            Rscript -e "rmarkdown::render('final-report.Rmd', output_format = 'pdf_document')"
+            #Rscript -e "rmarkdown::render('final-report.Rmd', output_format = 'pdf_document')"
 
         # Rename the outputs
             mv final-report.html ${sampleID}.report.html
-            mv final-report.pdf ${sampleID}.report.pdf
+            #mv final-report.pdf ${sampleID}.report.pdf
 
         # Remove temporary files
             rm final-report.Rmd quasitools-mutation_db.tsv drug.groups.csv

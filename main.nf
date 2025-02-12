@@ -3,10 +3,11 @@ nextflow.enable.dsl = 2
 
     /*
     ========================================================================================
-                            Q U A S I F L O W  P I P E L I N E
+                            H U G T i P - H I V - 1 . n f
     ========================================================================================
                 
                 A Nextflow pipeline for analysis of NGS-based HIV Drug resitance data
+                based on the QuasiFlow workflow
 
     ----------------------------------------------------------------------------------------
     */

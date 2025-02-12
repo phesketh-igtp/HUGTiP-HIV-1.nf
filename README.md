@@ -1,6 +1,6 @@
 # HUGTiP HIV-1 Drug Resistance and Lineage Profiling
 
-Active development since 2025-01-20! Use with caution (all but the rendering of the final report work)
+Active development since 2025-01-20! Use with caution.
 
 ## Introduction
 

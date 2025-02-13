@@ -35,7 +35,18 @@ process runHydra{
         """
         # Quasitools wont work on compressed files so must be uncompressed
             gunzip -c ${forward} > ${sampleID}_R1.fastq 
-            gunzip -c ${reverse} > ${sampleID}_R2.fastq 
+            gunzip -c ${reverse} > ${sampleID}_R2.fastq
+
+        seqkit seq \\
+                --min-len ${params.length_cutoff} \\
+                --min-qual ${params.min_read_qual} \\
+                ${sampleID}_R1.fastq > ${sampleID}_R1.1.fastq
+
+        seqkit seq \\
+                --min-len ${params.length_cutoff} \\
+                --min-qual ${params.min_read_qual} \\
+                ${sampleID}_R2.fastq > ${sampleID}_R2.2.fastq
+        rm ${sampleID}_R1.fastq ${sampleID}_R2.fastq
 
         # Run quasitools
             quasitools hydra \\

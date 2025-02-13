@@ -50,8 +50,8 @@ process runHydra{
 
         # Run quasitools
             quasitools hydra \\
-                ${sampleID}_R1.fastq \\
-                ${sampleID}_R2.fastq \\
+                ${sampleID}_R1.1.fastq \\
+                ${sampleID}_R2.1.fastq \\
                 -o . \\
                 --generate_consensus \\
                 --reporting_threshold   ${params.reporting_threshold} \\

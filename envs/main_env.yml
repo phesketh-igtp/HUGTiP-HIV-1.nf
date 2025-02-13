@@ -9,6 +9,7 @@ dependencies:
 - bioconda::samtools=1.21
 - bioconda::seqkit=2.9.0
 - bioconda::trim-galore=0.6.10
+- bioconda::bbmap=39.15
 - conda-forge::bzip2=1.0.8
 - conda-forge::numpy=2.2.1
 - conda-forge::pip=24.3.1

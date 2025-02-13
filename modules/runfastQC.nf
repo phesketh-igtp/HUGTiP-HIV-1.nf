@@ -14,8 +14,6 @@ process runfastQC {
                 } 
                 }
 
-        publishDir "${params.outdir}/${runID}/fastQC/", mode: "copy", overwrite: true
-
         input:
                 val(runID)
                 tuple val(sampleID), 
@@ -23,8 +21,8 @@ process runfastQC {
                         path(reverse)
 
         output:
-        path("*.zip"),                          emit: fastqc_zips
-        path("*.html"),                         emit: fastqc_htmls
+                path("*.zip"),          emit: fastqc_zips
+                path("*.html"),         emit: fastqc_htmls
 
         script:
                 """

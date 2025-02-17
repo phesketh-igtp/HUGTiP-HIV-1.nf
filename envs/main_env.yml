@@ -5,6 +5,7 @@ dependencies:
 - bowtie2=2.5.4
 - biopython=1.85
 - fastqc=0.11.8
+- fastp==0.24.0
 - multiqc=1.27
 - quasitools=0.7.0
 - samtools=1.21

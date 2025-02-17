@@ -5,6 +5,7 @@ channels:
   - conda-forge
 dependencies:
   - fastqc=0.11.8
+  - fastp=
   - multiqc=1.27
   - trim-galore=0.6.10
   - biopython=1.84

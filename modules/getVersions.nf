@@ -36,6 +36,7 @@ process getVersions {
         # Version controls
             rm -f versions
             quasitools --version | sed 's/ version /v/g' >> versions
+            fastp -v | sed 's/fastp /fastp v/g' >> versions
             trim_galore -v | grep 'version' | sed 's/ //g; s/version/TrimGalore,v/g' >> versions
             seqkit -h | grep 'Version' | sed 's/Version: /seqkit,v/g' >> versions
             sierrapy --version | sed -e 's/;/ |/g' >> versions

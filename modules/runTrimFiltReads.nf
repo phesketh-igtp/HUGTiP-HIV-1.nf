@@ -1,4 +1,4 @@
-process runTrimGalore {
+process runTrimFiltReads {
 
         tag "${sampleID}"
 
@@ -26,26 +26,17 @@ process runTrimGalore {
 
         output:
                 tuple val(sampleID), 
-                        path("${sampleID}_val_1.1.fq.gz"), 
-                        path("${sampleID}_val_2.1.fq.gz"), emit: trimmed_reads_ch
+                        path("${sampleID}.fastp.R1.fastq.gz"), 
+                        path("${sampleID}.fastp.R2.fastq.gz"), emit: trimmed_reads_ch
 
         script:
                 """
-                trim_galore -q ${params.min_read_qual} \\
-                        --basename ${sampleID} \\
-                        --paired ${forward} ${reverse} \\
-                        -o .
-
-                seqkit seq \
-                        --min-len       ${params.length_cutoff} \\
-                        --min-qual      ${params.min_read_qual} \\
-                        ${sampleID}_val_1.fq.gz \\
-                        > ${sampleID}_val_1.1.fq.gz
-
-                seqkit seq \
-                        --min-len       ${params.length_cutoff} \\
-                        --min-qual      ${params.min_read_qual} \\
-                        ${sampleID}_val_2.fq.gz \\
-                        > ${sampleID}_val_2.1.fq.gz
+                fastp --detect_adapter_for_pe \\
+                        -l ${params.length_cutoff} \\
+                        -e ${params.min_read_qual} \\
+                        -i ${forward} \\
+                        -I ${reverse} \\
+                        -o ${sampleID}.fastp.R1.fastq.gz \\
+                        -O ${sampleID}.fastp.R2.fastq.gz
                 """
 }

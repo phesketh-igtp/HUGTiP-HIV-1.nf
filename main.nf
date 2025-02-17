@@ -15,14 +15,14 @@ nextflow.enable.dsl = 2
     /*
         IMPORT MODULES
     */
-    include { runTrimGalore  }  from './modules/runTrimGalore.nf'
-    include { runfastQC      }  from './modules/runfastQC.nf'
-    include { getReadStats   }  from './modules/getReadStats.nf'
-    include { runMultiQC     }  from './modules/runMultiQC.nf'
-    include { runHydra       }  from './modules/runHydra.nf'
-    include { runSierralocal }  from './modules/runSierralocal.nf'
-    include { renderReport   }  from './modules/renderReport.nf'
-    include { getVersions    }  from './modules/getVersions.nf'
+    include { runTrimFiltReads  }  from './modules/runTrimFiltReads.nf'
+    include { runfastQC         }  from './modules/runfastQC.nf'
+    include { getReadStats      }  from './modules/getReadStats.nf'
+    include { runMultiQC        }  from './modules/runMultiQC.nf'
+    include { runHydra          }  from './modules/runHydra.nf'
+    include { runSierralocal    }  from './modules/runSierralocal.nf'
+    include { renderReport      }  from './modules/renderReport.nf'
+    include { getVersions       }  from './modules/getVersions.nf'
 
     /*
     ······································································································
@@ -145,22 +145,22 @@ nextflow.enable.dsl = 2
             getVersions( params.runID )
 
         // Run TimGalore on the reads
-            runTrimGalore( params.runID, samples_ch )
+            runTrimFiltReads( params.runID, samples_ch )
 
         // Run FastQC
-            //runfastQC( params.runID, runTrimGalore.out.trimmed_reads_ch )
+            //runfastQC( params.runID, runTrimFiltReads.out.trimmed_reads_ch )
 
                 // Collect all the samples for running MultiQC
             //        multiqc_zips = runfastQC.out.fastqc_zips.collect()
             //        multiqc_htmls = runfastQC.out.fastqc_htmls.collect()
 
-            getReadStats( params.runID,runTrimGalore.out.trimmed_reads_ch )
+            getReadStats( params.runID,runTrimFiltReads.out.trimmed_reads_ch )
 
         // Run MultiQC
             //runMultiQC( params.runID, multiqc_zips, multiqc_htmls )
 
         // Run Hydra on the reads
-            runHydra( params.runID, runTrimGalore.out.trimmed_reads_ch )
+            runHydra( params.runID, runTrimFiltReads.out.trimmed_reads_ch )
 
         // Run SierraLocal on the reads
             runSierralocal( params.runID, runHydra.out.cns_sequence )

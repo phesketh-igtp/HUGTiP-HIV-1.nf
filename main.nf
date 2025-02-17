@@ -148,16 +148,16 @@ nextflow.enable.dsl = 2
             runTrimGalore( params.runID, samples_ch )
 
         // Run FastQC
-            runfastQC( params.runID, runTrimGalore.out.trimmed_reads_ch )
+            //runfastQC( params.runID, runTrimGalore.out.trimmed_reads_ch )
 
                 // Collect all the samples for running MultiQC
-                    multiqc_zips = runfastQC.out.fastqc_zips.collect()
-                    multiqc_htmls = runfastQC.out.fastqc_htmls.collect()
+            //        multiqc_zips = runfastQC.out.fastqc_zips.collect()
+            //        multiqc_htmls = runfastQC.out.fastqc_htmls.collect()
 
             getReadStats( params.runID,runTrimGalore.out.trimmed_reads_ch )
 
         // Run MultiQC
-            runMultiQC( params.runID, multiqc_zips, multiqc_htmls )
+            //runMultiQC( params.runID, multiqc_zips, multiqc_htmls )
 
         // Run Hydra on the reads
             runHydra( params.runID, runTrimGalore.out.trimmed_reads_ch )

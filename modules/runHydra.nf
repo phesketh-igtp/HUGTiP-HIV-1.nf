@@ -37,21 +37,10 @@ process runHydra{
                 gunzip -c ${forward} > ${sampleID}_R1.fastq 
                 gunzip -c ${reverse} > ${sampleID}_R2.fastq
 
-        seqkit seq \\
-                --min-len ${params.length_cutoff} \\
-                --min-qual ${params.min_read_qual} \\
-                ${sampleID}_R1.fastq > ${sampleID}_R1.1.fastq
-
-        seqkit seq \\
-                --min-len ${params.length_cutoff} \\
-                --min-qual ${params.min_read_qual} \\
-                ${sampleID}_R2.fastq > ${sampleID}_R2.1.fastq
-        rm ${sampleID}_R1.fastq ${sampleID}_R2.fastq
-
         # Run quasitools
         quasitools hydra \\
-                ${sampleID}_R1.1.fastq \\
-                ${sampleID}_R2.1.fastq \\
+                ${sampleID}_R1.fastq  \\
+                ${sampleID}_R2.fastq \\
                 -o . \\
                 --generate_consensus \\
                 --reporting_threshold   ${params.reporting_threshold} \\

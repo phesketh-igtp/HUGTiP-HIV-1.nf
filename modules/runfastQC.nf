@@ -32,5 +32,5 @@ process runfastQC {
                         ${forward} ${reverse}
                 
                 mv ${sampleID}_fastqc/* .
-        """
+                """
 }

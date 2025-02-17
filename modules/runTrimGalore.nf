@@ -37,14 +37,14 @@ process runTrimGalore {
                         -o .
 
                 seqkit seq \
-                        --length_cutoff ${params.length_cutoff} \\
-                        --length_cutoff ${params.min_read_qual} \\
+                        --min-len       ${params.length_cutoff} \\
+                        --min-qual      ${params.min_read_qual} \\
                         ${sampleID}_val_1.fq.gz \\
                         > ${sampleID}_val_1.1.fq.gz
 
                 seqkit seq \
-                        --length_cutoff ${params.length_cutoff} \\
-                        --length_cutoff ${params.min_read_qual} \\
+                        --min-len       ${params.length_cutoff} \\
+                        --min-qual      ${params.min_read_qual} \\
                         ${sampleID}_val_2.fq.gz \\
                         > ${sampleID}_val_2.1.fq.gz
                 """

@@ -26,8 +26,8 @@ process runTrimGalore {
 
         output:
                 tuple val(sampleID), 
-                        path("${sampleID}_val_1.fq.gz"), 
-                        path("${sampleID}_val_2.fq.gz"), emit: trimmed_reads_ch
+                        path("${sampleID}_val_1.1.fq.gz"), 
+                        path("${sampleID}_val_2.1.fq.gz"), emit: trimmed_reads_ch
 
         script:
                 """
@@ -36,10 +36,16 @@ process runTrimGalore {
                         --paired ${forward} ${reverse} \\
                         -o .
 
-                clumpify.sh \\
-                        in=${sampleID}_val_1.fq.gz \\
-                        in2=${sampleID}_val_2.fq.gz \\
-                        out=${sampleID}_val_1.1.fq.gz \\
-                        out2=${sampleID}_val_2.1.fq.gz
-        """
+                seqkit seq \
+                        --length_cutoff ${params.length_cutoff} \\
+                        --length_cutoff ${params.min_read_qual} \\
+                        ${sampleID}_val_1.fq.gz \\
+                        > ${sampleID}_val_1.1.fq.gz
+
+                seqkit seq \
+                        --length_cutoff ${params.length_cutoff} \\
+                        --length_cutoff ${params.min_read_qual} \\
+                        ${sampleID}_val_2.fq.gz \\
+                        > ${sampleID}_val_2.1.fq.gz
+                """
 }

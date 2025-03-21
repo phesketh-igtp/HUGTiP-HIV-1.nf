@@ -23,6 +23,7 @@ nextflow.enable.dsl = 2
     include { runSierralocal    }  from './modules/runSierralocal.nf'
     include { renderReport      }  from './modules/renderReport.nf'
     include { getVersions       }  from './modules/getVersions.nf'
+    //include { runJoinStats      }  from './modules/joinStats.nf'
 
     /*
     ······································································································
@@ -98,7 +99,7 @@ nextflow.enable.dsl = 2
                 error "Please provide a runID file with --name (chr)"
             }
 
-                if (params.workDir == null) {
+            if (params.workDir == null) {
                 error "Please provide a runID file with --name (chr)"
             }
 
@@ -154,7 +155,8 @@ nextflow.enable.dsl = 2
             //        multiqc_zips = runfastQC.out.fastqc_zips.collect()
             //        multiqc_htmls = runfastQC.out.fastqc_htmls.collect()
 
-            getReadStats( params.runID,runTrimFiltReads.out.trimmed_reads_ch )
+            getReadStats( params.runID,
+                            runTrimFiltReads.out.trimmed_reads_ch )
 
         // Run MultiQC
             //runMultiQC( params.runID, multiqc_zips, multiqc_htmls )
@@ -166,11 +168,12 @@ nextflow.enable.dsl = 2
             runSierralocal( params.runID, runHydra.out.cns_sequence )
         
         // Merge the channels for the final_report_ch
-        //runHydra.out.report_ch.view()
-        //runSierralocal.out.report_ch.view()
             merged_reports_ch = getReadStats.out.report_ch
-                                    .join(runHydra.out.report_ch)
-                                    .join(runSierralocal.out.report_ch)
+                            .join(runHydra.out.report_ch)
+                            .join(runSierralocal.out.report_ch)
+
+            //runJoinStats( params.runID,
+            //                merged_reports_ch )
 
         // Render the HTML output
             renderReport( params.runID, 

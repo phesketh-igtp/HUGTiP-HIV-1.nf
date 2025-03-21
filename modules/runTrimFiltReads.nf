@@ -5,22 +5,22 @@ process runTrimFiltReads {
         conda params.conda_main_envs
 
         container { 
-                if (workflow.containerEngine == 'docker') {
-                        params.docker_main_img
-                } else if (workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer') {
-                        params.singularity_main_img
-                } else { 
-                        null 
-                } 
+                        if (workflow.containerEngine == 'docker') {
+                                params.docker_main_img
+                        } else if (workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer') {
+                                params.singularity_main_img
+                        } else { 
+                                null 
+                        } 
                 }
 
-        publishDir "${params.outdir}/${runID}/", mode: "copy", overwrite: true,
-                                        pattern: '.{out,csv,txt,tsv}'
+        publishDir "${params.outdir}/${runID}/", mode: "copy", overwrite: true, pattern: '.{out,csv,txt,tsv}'
 
         input:
                 val(runID)
-                tuple val(sampleID), 
-                        path(forward), 
+
+                tuple val(sampleID),
+                        path(forward),
                         path(reverse),
                         val(type)
 

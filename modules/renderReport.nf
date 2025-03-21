@@ -34,7 +34,7 @@ process renderReport{
     script:
 
         """
-        # Modify the results for rendering
+        # Modify the results for renderingsss
             sed -i '1d' ${coverage_res} # remove the header for the coverage file
             cut -f2 ${lengths_res} > read_lenths.tsv
 

@@ -14,6 +14,7 @@ process getReadStats {
                 } 
                 }
 
+        
         publishDir "${params.outdir}/${runID}/readStats/", mode: "copy", overwrite: true
 
         input:

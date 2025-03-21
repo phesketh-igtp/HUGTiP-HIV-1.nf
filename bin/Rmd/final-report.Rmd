@@ -257,11 +257,11 @@ p2 <- ggplot(coverage_complete,
         plot.title = element_text(size = 11)) +
     labs(x = "Position along HXB2 pol", y = "Depth of coverage (no. reads)") +
     geom_rect(aes(xmin = 0, xmax = 296, ymin = -200, ymax = 0), fill = "blue", alpha = 0.3) +
-    annotate("text", x = 148, y = -900, label = "PR") + 
+    annotate("text", x = 148, y = -900, label = "PR") +
     geom_rect(aes(xmin = 297, xmax = 1616, ymin = -500, ymax = -300), fill = "red", alpha = 0.3) +
-    annotate("text", x = 956, y = -900, label = "RT") + 
+    annotate("text", x = 956, y = -900, label = "RT") +
     geom_rect(aes(xmin = 1977, xmax = 2843, ymin = -200, ymax = 0), fill = "green", alpha = 0.3) +
-    annotate("text", x = 2410, y = -900, label = "IN") 
+    annotate("text", x = 2410, y = -900, label = "IN")
 
 ggplotly(p2)
 
